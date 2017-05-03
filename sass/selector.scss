@@ -1,0 +1,61 @@
+$prefix:'slwy';
+$mainColor:#003b9f;
+$activeBgColor:#5897fb;
+
+.#{$prefix}-selector{
+    position: absolute;
+    display: none;
+    .#{$prefix}-selector-dropdown{
+        min-width:300px;
+        background-color: #fff;
+        border:1px solid #eee;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        .#{$prefix}-selector-title{
+            height: 35px;
+            width: 100%;
+            background-color: $mainColor;
+            color:#fff;
+            text-align: center;
+            line-height: 35px;
+            font-size: 15px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .#{$prefix}-selector-search{
+            margin:10px 10px 0 10px;
+            input[type=search]{
+                width: 100%;
+                border-radius: 2px;
+                font-size: 15px;
+                border:1px solid #ccc;
+                padding:5px 10px;
+            }
+        }
+        .#{$prefix}-selector-options-list{
+            list-style: none;
+            margin:0;
+            padding:0;
+            margin-top:8px;
+            max-height: 300px;
+            // overflow: hidden;
+            overflow: auto;
+            li.#{$prefix}-selector-option{
+                padding:5px 10px;
+                font-size:15px;
+                cursor:pointer;
+                .#{$prefix}-selector-option-right{
+                    float: right;
+                }
+                &.#{$prefix}-selector-hover{
+                    background-color:#eee;
+                    color:$mainColor;
+                }
+                &.#{$prefix}-selector-active{
+                    background-color: $activeBgColor;
+                    color:#fff;
+                }
+            }
+        }
+    }
+}

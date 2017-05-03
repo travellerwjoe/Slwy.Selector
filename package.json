@@ -1,0 +1,12 @@
+{
+  "name": "slwy-selector",
+  "version": "0.1.0",
+  "description": "商旅无忧简易选择列表插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch":"browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\""
+  },
+  "author": "Joe.Wu",
+  "license": "MIT"
+}

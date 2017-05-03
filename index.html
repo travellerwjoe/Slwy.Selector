@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="stylesheets/selector.css">
+    <title>Slwy-Selector</title>
+</head>
+
+<body>
+    <!--<select name="select" id="selector">
+        <option value="CA">中国国际航空</option>
+        <option value="MU">东方航空</option>
+        <option value="CZ">南方航空</option>
+        <option value="FM">上海航空</option>
+    </select>-->
+    <input type="text" id="Airline" placeholder="选填（中文/代码）">
+    <!--<div class="slwy-selector">
+        <div class="slwy-selector-dropdown">
+            <div class="slwy-selector-title">支持中文|代码搜索</div>
+            <div class="slwy-selector-search">
+                <input type="search" class="slwy-selector-search-input" autocomplete="off">
+            </div>
+            <div class="slwy-selector-result">
+                <ul class="slwy-selector-options-list">
+                    <li class="slwy-selector-option">
+                        <span class="slwy-selector-option-left">中国国际航空</span>
+                        <span class="slwy-selector-option-right">CA</span>
+                    </li>
+                    <li class="slwy-selector-option">
+                        <span class="slwy-selector-option-left">东方航空</span>
+                        <span class="slwy-selector-option-right">MU</span>
+                    </li>
+                    <li class="slwy-selector-option">
+                        <span class="slwy-selector-option-left">南方航空</span>
+                        <span class="slwy-selector-option-right">CZ</span>
+                    </li>
+                    <li class="slwy-selector-option">
+                        <span class="slwy-selector-option-left">上海航空</span>
+                        <span class="slwy-selector-option-right">FM</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>-->
+    <script src="js/jquery.1.8.3.min.js"></script>
+    <script src="js/selector.js"></script>
+    <script>
+        $.get('/IntCarrier.json', function (data) {
+            var options = {
+                title: '支持中文|代码搜索',
+                data: data,
+                showField: 'CarrierName',
+                showRight: true,
+                showRightFiled: 'CarrierCode',
+                search: true,
+                searchPlaceholder: '搜索航空公司'
+            }
+            $('#Airline').SlwySelector(options)
+                /*.on('selected', function (e) {
+                    console.log(e.value)
+                })*/
+        })
+    </script>
+</body>
+
+</html>
