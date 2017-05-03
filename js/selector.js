@@ -145,23 +145,32 @@
     }
 
     Selector.prototype.bind = function () {
-        var self = this
+        var self = this,
+            lastHoverStartIndex,
+            lastHoverEndIndex = 9
         $(document).on(events.keydownEvent, function (e) {
             if (self.$selector.is(':hidden')) {
                 return
             }
-            console.log(e.keyCode)
+
             var keyCode = e.keyCode || e.which,
                 hoverIndex = self.dropdown.hoverIndex,
                 hoverClassName = className.hoverClassName,
                 scrollOffset
             if (keyCode === 38) {
                 hoverIndex = hoverIndex > 0 ? hoverIndex - 1 : 0
+                scrollOffset = hoverIndex > lastHoverStartIndex ? self.dropdown.$optionsList.scrollTop() : hoverIndex * 30
+                if (hoverIndex < lastHoverEndIndex - 9) {
+                    lastHoverStartIndex = hoverIndex
+                }
+                lastHoverEndIndex = lastHoverStartIndex + 9
+                console.log(lastHoverEndIndex,lastHoverStartIndex)
             } else if (keyCode === 40) {
                 // hoverIndex = hoverIndex < 10 ? hoverIndex + 1 : 9
                 hoverIndex = hoverIndex + 1
-                scrollOffset = hoverIndex >= 10 ? (hoverIndex - 9) * 30 : 0
-                self.dropdown.$optionsList.scrollTop(scrollOffset)
+                scrollOffset = hoverIndex >= lastHoverEndIndex ? (hoverIndex - 9) * 30 : self.dropdown.$optionsList.scrollTop()
+                lastHoverStartIndex = hoverIndex - 9
+                console.log(lastHoverStartIndex)
             } else if (keyCode === 13) {
                 var $hoverItem = self.dropdown.$optionsList.find('.' + hoverClassName)
                 self.$srcElement.trigger({
@@ -171,6 +180,7 @@
                 })
                 $hoverItem.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
             }
+            self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
             self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
         })
