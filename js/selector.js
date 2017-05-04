@@ -30,8 +30,10 @@
         },
         className = {
             hoverClassName: prefix + '-selector-hover',
-            activeClassName: prefix + '-selector-active'
-        }
+            activeClassName: prefix + '-selector-active',
+            disabledClassName: prefix + '-selector-option-disabled'
+        },
+        viewCount = 10 //列表每页显示数量
 
 
 
@@ -146,8 +148,9 @@
 
     Selector.prototype.bind = function () {
         var self = this,
-            lastHoverStartIndex,
-            lastHoverEndIndex = 9
+            viewIndex = viewCount - 1,
+            lastHoverStartIndex,//最后滚动时列表该页的第一个索引
+            lastHoverEndIndex = 9 //最后滚动时列表该页的最后一个索引
         $(document).on(events.keydownEvent, function (e) {
             if (self.$selector.is(':hidden')) {
                 return
@@ -156,23 +159,29 @@
             var keyCode = e.keyCode || e.which,
                 hoverIndex = self.dropdown.hoverIndex,
                 hoverClassName = className.hoverClassName,
+                $hoverItem = self.dropdown.$optionsList.find('.' + hoverClassName),
+                listScrollTop = self.dropdown.$optionsList.scrollTop(),
                 scrollOffset
             if (keyCode === 38) {
                 hoverIndex = hoverIndex > 0 ? hoverIndex - 1 : 0
-                scrollOffset = hoverIndex > lastHoverStartIndex ? self.dropdown.$optionsList.scrollTop() : hoverIndex * 30
-                if (hoverIndex < lastHoverEndIndex - 9) {
+                while ($hoverItem.prev().hasClass(className.disabledClassName)) {
+                    hoverIndex--
+                    $hoverItem = $hoverItem.removeClass(hoverClassName).prev()
+                }
+                scrollOffset = hoverIndex > lastHoverStartIndex ? listScrollTop : hoverIndex * 30
+                if (hoverIndex < lastHoverEndIndex - viewIndex) {
                     lastHoverStartIndex = hoverIndex
                 }
-                lastHoverEndIndex = lastHoverStartIndex + 9
-                console.log(lastHoverEndIndex,lastHoverStartIndex)
+                lastHoverEndIndex = lastHoverStartIndex + viewIndex
             } else if (keyCode === 40) {
-                // hoverIndex = hoverIndex < 10 ? hoverIndex + 1 : 9
-                hoverIndex = hoverIndex + 1
-                scrollOffset = hoverIndex >= lastHoverEndIndex ? (hoverIndex - 9) * 30 : self.dropdown.$optionsList.scrollTop()
-                lastHoverStartIndex = hoverIndex - 9
-                console.log(lastHoverStartIndex)
+                hoverIndex = hoverIndex < self.data.length - 1 ? hoverIndex + 1 : self.data.length - 1
+                while ($hoverItem.next().hasClass(className.disabledClassName)) {
+                    hoverIndex++
+                    $hoverItem = $hoverItem.removeClass(hoverClassName).next()
+                }
+                scrollOffset = hoverIndex >= lastHoverEndIndex ? (hoverIndex - viewIndex) * 30 : listScrollTop
+                lastHoverStartIndex = hoverIndex - viewIndex
             } else if (keyCode === 13) {
-                var $hoverItem = self.dropdown.$optionsList.find('.' + hoverClassName)
                 self.$srcElement.trigger({
                     type: 'selected',
                     text: $hoverItem.data('text'),
@@ -223,10 +232,12 @@
     Dropdown.prototype.bind = function () {
         var self = this
         this.$optionsList.on(events.hoverEvent, 'li', function (e) {
+            if ($(this).hasClass(className.disabledClassName)) return
             var hoverClassName = className.hoverClassName
             $(this).addClass(hoverClassName).siblings().removeClass(hoverClassName)
             self.hoverIndex = $(this).index()
         }).on(events.clickEvent, 'li', function (e) {
+            if ($(this).hasClass(className.disabledClassName)) return
             var data = $(this).data('data'),
                 text = $(this).data('text'),
                 activeClassName = className.activeClassName
@@ -247,12 +258,12 @@
             // len = data.length > 15 ? 15 : data.length
             len = data.length
         for (var i = 0; i < len; i++) {
-            var className = prefix + '-selector-option ',
+            var clsName = prefix + '-selector-option ',
                 $li
-            if (i >= 10) {
-                className += prefix + '-selector-option-hidden'
+            if (data[i].disabled || data[i].Disabled) {
+                clsName += className.disabledClassName
             }
-            $li = $('<li>').addClass(className).data({
+            $li = $('<li>').addClass(clsName).data({
                 data: data[i],
                 text: data[i][this.selector.options.showField]
             })

@@ -4155,6 +4155,7 @@
         "CountryType": 1,
         "CountryTypeName": "国际",
         "IsDelete": 0,
+        "Disabled": true,
         "AddTime": "0001-01-01T00:00:00",
         "AddUser": "",
         "ModifyUser": ""
@@ -4168,6 +4169,7 @@
         "CountryType": 1,
         "CountryTypeName": "国际",
         "IsDelete": 0,
+        "Disabled": true,
         "AddTime": "0001-01-01T00:00:00",
         "AddUser": "",
         "ModifyUser": ""
@@ -4181,6 +4183,7 @@
         "CountryType": 1,
         "CountryTypeName": "国际",
         "IsDelete": 0,
+        "Disabled": true,
         "AddTime": "0001-01-01T00:00:00",
         "AddUser": "",
         "ModifyUser": ""

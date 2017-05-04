@@ -64,3 +64,8 @@
   background-color: #5897fb;
   color: #fff;
 }
+/* line 58, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-option-disabled {
+  cursor: default;
+  color: #ddd;
+}

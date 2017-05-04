@@ -55,6 +55,10 @@ $activeBgColor:#5897fb;
                     background-color: $activeBgColor;
                     color:#fff;
                 }
+                &.#{$prefix}-selector-option-disabled{
+                    cursor:default;
+                    color:#ddd;
+                }
             }
         }
     }
