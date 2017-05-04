@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="stylesheets/selector.css">
     <title>Slwy-Selector</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
     <style>
         input {
             width: 300px;
@@ -15,66 +17,97 @@
 </head>
 
 <body>
+    <h1>jQuery.Slwy.Selector plugin</h1>
+    <h2>绑定元素为select</h2>
     <select name="select" id="Airline">
-        <option value="CA" data-right="CA">中国国际航空</option>
+        <option value="CA" data-right="CA" disabled>中国国际航空</option>
         <option value="MU" data-right="MU">东方航空</option>
         <option value="CZ">南方航空</option>
         <option value="FM">上海航空</option>
     </select>
+    <pre>
+        <code>
+        //html
+        &lt;select name="select" id="Airline"&gt;
+            &lt;option value="CA" data-right="CA" disabled&gt;中国国际航空&lt;/option&gt;
+            &lt;option value="MU" data-right="MU"&gt;东方航空&lt;/option&gt;
+            &lt;option value="CZ"&gt;南方航空&lt;/option&gt;
+            &lt;option value="FM"&gt;上海航空&lt;/option&gt;
+        &lt;/select&gt;
+
+        //JS
+        $('select#Airline').SlwySelector({
+            //title: '支持中文|代码搜索',//自定义标题
+            //titleBar: false,//是否显示标题栏
+            // data: data,//自定义数据
+            //showField: 'CarrierName',//需要展示的自定义数据字段名
+            showRight: true,//是否显示右侧字段
+            //showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
+            search: true,//是否显示搜索
+            searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        })
+        //选择事件
+        /*.on('selected', function (e) {
+            console.log(e.value)
+        })*/
+        </code>
+    </pre>
+    <h2>绑定元素为input</h2>
     <input type="text" id="Airline2" placeholder="选填（中文/代码）">
-    <!--<div class="slwy-selector">
-        <div class="slwy-selector-dropdown">
-            <div class="slwy-selector-title">支持中文|代码搜索</div>
-            <div class="slwy-selector-search">
-                <input type="search" class="slwy-selector-search-input" autocomplete="off">
-            </div>
-            <div class="slwy-selector-result">
-                <ul class="slwy-selector-options-list">
-                    <li class="slwy-selector-option">
-                        <span class="slwy-selector-option-left">中国国际航空</span>
-                        <span class="slwy-selector-option-right">CA</span>
-                    </li>
-                    <li class="slwy-selector-option">
-                        <span class="slwy-selector-option-left">东方航空</span>
-                        <span class="slwy-selector-option-right">MU</span>
-                    </li>
-                    <li class="slwy-selector-option">
-                        <span class="slwy-selector-option-left">南方航空</span>
-                        <span class="slwy-selector-option-right">CZ</span>
-                    </li>
-                    <li class="slwy-selector-option">
-                        <span class="slwy-selector-option-left">上海航空</span>
-                        <span class="slwy-selector-option-right">FM</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>-->
+    <pre>
+        <code>
+        //html
+        &lt;input type="text" id="Airline2" placeholder="选填（中文/代码）">
+
+        //JS
+        $('input#Airline2').SlwySelector({
+            title: '支持中文|代码搜索',//自定义标题
+            titleBar: true,//是否显示标题栏
+            data: data,//自定义数据
+            showField: 'CarrierName',//需要展示的自定义数据字段名
+            showRight: true,//是否显示右侧字段
+            showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
+            search: true,//是否显示搜索
+            searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        })
+        //选择事件
+        /*.on('selected', function (e) {
+            console.log(e.value)
+        })*/
+        </code>
+    </pre>
+
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="js/selector.js"></script>
     <script>
-        $.get('/IntCarrier.json', function (data) {
+        hljs.initHighlightingOnLoad();
+        $.get('/data.json', function (data) {
             $('select#Airline').SlwySelector({
-                title: '支持中文|代码搜索',
-                titleBar: false,
-                data: data,
-                showField: 'CarrierName',
-                showRight: true,
-                showRightFiled: 'CarrierCode',
-                search: true,
-                searchPlaceholder: '搜索航空公司'
+                // title: '支持中文|代码搜索',//自定义标题
+                // titleBar: false,//是否显示标题栏
+                // data: data,//自定义数据
+                showField: 'CarrierName',//需要展示的自定义数据字段名
+                showRight: true,//是否显示右侧字段
+                showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
+                search: true,//是否显示搜索
+                searchPlaceholder: '搜索航空公司'//搜索栏placeholder
             })
-            
+            //选择事件
+            /*.on('selected', function (e) {
+                console.log(e.value)
+            })*/
+
             $('input#Airline2').SlwySelector({
-                title: '支持中文|代码搜索',
-                // titleBar: false,
-                data: data,
-                showField: 'CarrierName',
-                showRight: true,
-                showRightFiled: 'CarrierCode',
-                search: true,
-                searchPlaceholder: '搜索航空公司'
+                title: '支持中文|代码搜索',//自定义标题
+                titleBar: true,//是否显示标题栏
+                data: data,//自定义数据
+                showField: 'CarrierName',//需要展示的自定义数据字段名
+                showRight: true,//是否显示右侧字段
+                showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
+                search: true,//是否显示搜索
+                searchPlaceholder: '搜索航空公司'//搜索栏placeholder
             })
+            //选择事件
             /*.on('selected', function (e) {
                 console.log(e.value)
             })*/

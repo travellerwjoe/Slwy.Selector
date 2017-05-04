@@ -1,10 +1,15 @@
+/**
+ * @preserve jquery.Slwy.Calendar.js
+ * @author Joe.Wu
+ * @version v0.9.0 - alpha
+ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         require(['jQuery'], factory)
     } else if (typeof module !== 'undefined' && typeof module.exports === 'object') {
         module.exports = factory(require('jQuery'))
     } else {
-        root.SlwyCalendar = factory(root.jQuery)
+        root.SlwySelector = factory(root.jQuery)
     }
 }(this, function ($) {
     var prefix = 'slwy',
@@ -36,51 +41,41 @@
         viewCount = 10, //列表每页显示数量
         specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
 
-
-
     function getMethods(theClass) {
-        var proto = theClass.prototype;
-
-        var methods = [];
+        var proto = theClass.prototype,
+            methods = [];
 
         for (var methodName in proto) {
-            var m = proto[methodName];
+            var m = proto[methodName]
 
             if (typeof m !== 'function') {
-                continue;
+                continue
             }
-
             if (methodName === 'constructor') {
-                continue;
+                continue
             }
-
             methods.push(methodName);
         }
-
         return methods;
     }
 
     function Decorate(SuperClass, DecoratorClass) {
-        var decoratedMethods = getMethods(DecoratorClass);
-        var superMethods = getMethods(SuperClass);
+        var decoratedMethods = getMethods(DecoratorClass),
+            superMethods = getMethods(SuperClass)
 
         function DecoratedClass() {
-            var unshift = Array.prototype.unshift;
-
-            var argCount = DecoratorClass.prototype.constructor.length;
-
-            var calledConstructor = SuperClass.prototype.constructor;
+            var unshift = Array.prototype.unshift,
+                argCount = DecoratorClass.prototype.constructor.length,
+                calledConstructor = SuperClass.prototype.constructor
 
             if (argCount > 0) {
-                unshift.call(arguments, SuperClass.prototype.constructor);
-
-                calledConstructor = DecoratorClass.prototype.constructor;
+                unshift.call(arguments, SuperClass.prototype.constructor)
+                calledConstructor = DecoratorClass.prototype.constructor
             }
-
-            calledConstructor.apply(this, arguments);
+            calledConstructor.apply(this, arguments)
         }
 
-        DecoratorClass.displayName = SuperClass.displayName;
+        DecoratorClass.displayName = SuperClass.displayName
 
         function ctr() {
             this.constructor = DecoratedClass;
@@ -88,35 +83,32 @@
 
         DecoratedClass.prototype = new ctr();
 
-        for (var m = 0; m < superMethods.length; m++) {
-            var superMethod = superMethods[m];
+        for (var i = 0; i < superMethods.length; i++) {
+            var superMethod = superMethods[i]
 
-            DecoratedClass.prototype[superMethod] =
-                SuperClass.prototype[superMethod];
+            DecoratedClass.prototype[superMethod] = SuperClass.prototype[superMethod]
         }
 
         var calledMethod = function (methodName) {
-            var originalMethod = function () { };
+            var originalMethod = function () { },
+                decoratedMethod = DecoratorClass.prototype[methodName]
 
             if (methodName in DecoratedClass.prototype) {
-                originalMethod = DecoratedClass.prototype[methodName];
+                originalMethod = DecoratedClass.prototype[methodName]
             }
 
-            var decoratedMethod = DecoratorClass.prototype[methodName];
-
             return function () {
-                var unshift = Array.prototype.unshift;
+                var unshift = Array.prototype.unshift
 
-                unshift.call(arguments, originalMethod);
-
-                return decoratedMethod.apply(this, arguments);
+                unshift.call(arguments, originalMethod)
+                return decoratedMethod.apply(this, arguments)
             };
         };
 
-        for (var d = 0; d < decoratedMethods.length; d++) {
-            var decoratedMethod = decoratedMethods[d];
+        for (var i = 0; i < decoratedMethods.length; i++) {
+            var decoratedMethod = decoratedMethods[i]
 
-            DecoratedClass.prototype[decoratedMethod] = calledMethod(decoratedMethod);
+            DecoratedClass.prototype[decoratedMethod] = calledMethod(decoratedMethod)
         }
 
         return DecoratedClass;
@@ -125,7 +117,7 @@
     function Selector(options, $srcElement) {
         var defaults = {
             title: '支持中文搜索',
-            titleBar: true,
+            titleBar: false,
             data: [],
             showField: '',
             showRight: false,
@@ -199,7 +191,6 @@
             self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
         })
 
-        // if (this.$srcElement.is('input')) {
         this.$srcElement.on(events.clickEvent, function (e) {
             self.show()
         }).on(events.selectedEvent, function (e) {
@@ -217,14 +208,6 @@
             }
             self.hide()
         })
-        /*} else if (this.$srcElement.is('select')) {
-            $(document).on(events.clickEvent, function (e) {
-                if ($(e.target).is(self.$opener) || self.$selector.find($(e.target)).length) {
-                    return
-                }
-                self.hide()
-            })
-        }*/
     }
 
     Selector.prototype.render = function () {
@@ -438,11 +421,13 @@
         $options.each(function (index, item) {
             var text = $(item).text(),
                 rightText = $(item).data('right'),
-                value = $(item).attr('value')
+                value = $(item).attr('value'),
+                disabled = $(item).is(':disabled')
             data.push({
                 text: text,
                 rightText: rightText,
-                value: value
+                value: value,
+                disabled: disabled
             })
         })
         this.optionsData = data

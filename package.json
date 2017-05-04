@@ -1,12 +1,30 @@
 {
-  "name": "slwy-selector",
-  "version": "0.1.0",
-  "description": "商旅无忧简易选择列表插件",
+  "name": "jquery.slwy.selector",
+  "version": "0.9.0",
+  "description": "Slwy简易选择列表插件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch":"browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\""
+    "minify": "uglifyjs js/selector.js -c -m -o dist/jquery.Slwy.Selector.min.js --comments && uglifycss stylesheets/selector.css > dist/jquery.Slwy.Selector.min.css",
+    "watch": "browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\""
   },
   "author": "Joe.Wu",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/travellerwjoe/Slwy.Selector.git"
+  },
+  "keywords": [
+    "selector",
+    "chosen",
+    "select"
+  ],
+  "bugs": {
+    "url": "https://github.com/travellerwjoe/Slwy.Selector/issues"
+  },
+  "homepage": "https://github.com/travellerwjoe/Slwy.Selector#readme",
+  "devDependencies": {
+    "uglify-js": "^2.8.22",
+    "uglifycss": "0.0.27"
+  }
 }
