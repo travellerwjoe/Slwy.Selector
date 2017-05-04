@@ -5,31 +5,35 @@ $activeBgColor:#5897fb;
 .#{$prefix}-selector{
     position: absolute;
     display: none;
+    .#{$prefix}-selector-title{
+        height: 35px;
+        width: 100%;
+        background-color: $mainColor;
+        color:#fff;
+        text-align: center;
+        line-height: 35px;
+        font-size: 15px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
     .#{$prefix}-selector-dropdown{
         min-width:300px;
         background-color: #fff;
         border:1px solid #eee;
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
-        .#{$prefix}-selector-title{
-            height: 35px;
-            width: 100%;
-            background-color: $mainColor;
-            color:#fff;
-            text-align: center;
-            line-height: 35px;
-            font-size: 15px;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
         .#{$prefix}-selector-search{
             margin:10px 10px 0 10px;
             input[type=search]{
+                background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABiElEQVQ4T5VTwVHDMBC81Yz0JamAUAFJBSQVEDqACiCPSJMX4Snl4VABdECoANOBS3AJ4evx+JgzVnAyDhn0Ost3e6u9PVDrJEnSK8vynpnHRDQkoh4RZcycK6We5/N52s6XGPHCez8F8NIUyfVn829AROdNnGmtJ7PZbBvraoCm+E1iZn4yxqzbSavVaszMSyK6EkbW2tEeQAghb7qMrLXZIc34HULYENE1M8+cc+v6Cd77BwCJdHbOSZejRzQqiiIHwNbafgTIAFxqrftt2sdQvPdLAI/MfOOc2yCEwCKYtVaUP3miXpHxvwEaQT/2AGTOzrmLk+1/JhY1q4UUBrWyACZdRjkEjflEVE8MkRIRpdbayV8sWn7ZaVYbKYQgMxULb4wxd13TiE5lZlRVNVwsFuKdXyu3qG0BCKDsgFh2KLsBYMrMX0qpaVVVPWNMKo12uxAtTUSvAM46nvKutb4tikLAxPb1XuwBtCwrmyidB0qptCzLPFJu3JiK+QSkE+DUOCOI5H0DvqbhpnSx/FYAAAAASUVORK5CYII=');
+                background-repeat: no-repeat;
+                background-position: 5px 5px;
+                padding-left:15px;
                 width: 100%;
                 border-radius: 2px;
                 font-size: 15px;
                 border:1px solid #ccc;
-                padding:5px 10px;
+                padding:5px 10px 5px 25px;
             }
         }
         .#{$prefix}-selector-options-list{
@@ -40,7 +44,7 @@ $activeBgColor:#5897fb;
             max-height: 300px;
             // overflow: hidden;
             overflow: auto;
-            li.#{$prefix}-selector-option{
+            li{
                 padding:5px 10px;
                 font-size:15px;
                 cursor:pointer;

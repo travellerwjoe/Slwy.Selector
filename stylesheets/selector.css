@@ -4,15 +4,7 @@
   display: none;
 }
 /* line 8, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown {
-  min-width: 300px;
-  background-color: #fff;
-  border: 1px solid #eee;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-/* line 14, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-title {
+.slwy-selector .slwy-selector-title {
   height: 35px;
   width: 100%;
   background-color: #003b9f;
@@ -23,19 +15,31 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
+/* line 19, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown {
+  min-width: 300px;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
 /* line 25, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-search {
   margin: 10px 10px 0 10px;
 }
 /* line 27, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-search input[type=search] {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABiElEQVQ4T5VTwVHDMBC81Yz0JamAUAFJBSQVEDqACiCPSJMX4Snl4VABdECoANOBS3AJ4evx+JgzVnAyDhn0Ost3e6u9PVDrJEnSK8vynpnHRDQkoh4RZcycK6We5/N52s6XGPHCez8F8NIUyfVn829AROdNnGmtJ7PZbBvraoCm+E1iZn4yxqzbSavVaszMSyK6EkbW2tEeQAghb7qMrLXZIc34HULYENE1M8+cc+v6Cd77BwCJdHbOSZejRzQqiiIHwNbafgTIAFxqrftt2sdQvPdLAI/MfOOc2yCEwCKYtVaUP3miXpHxvwEaQT/2AGTOzrmLk+1/JhY1q4UUBrWyACZdRjkEjflEVE8MkRIRpdbayV8sWn7ZaVYbKYQgMxULb4wxd13TiE5lZlRVNVwsFuKdXyu3qG0BCKDsgFh2KLsBYMrMX0qpaVVVPWNMKo12uxAtTUSvAM46nvKutb4tikLAxPb1XuwBtCwrmyidB0qptCzLPFJu3JiK+QSkE+DUOCOI5H0DvqbhpnSx/FYAAAAASUVORK5CYII=");
+  background-repeat: no-repeat;
+  background-position: 5px 5px;
+  padding-left: 15px;
   width: 100%;
   border-radius: 2px;
   font-size: 15px;
   border: 1px solid #ccc;
-  padding: 5px 10px;
+  padding: 5px 10px 5px 25px;
 }
-/* line 35, ../sass/selector.scss */
+/* line 39, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list {
   list-style: none;
   margin: 0;
@@ -44,30 +48,30 @@
   max-height: 300px;
   overflow: auto;
 }
-/* line 43, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option {
+/* line 47, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li {
   padding: 5px 10px;
   font-size: 15px;
   cursor: pointer;
   position: relative;
 }
-/* line 48, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option .slwy-selector-option-right {
+/* line 52, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li .slwy-selector-option-right {
   position: absolute;
   right: 10px;
 }
-/* line 52, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-hover {
+/* line 56, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-hover {
   background-color: #eee;
   color: #003b9f;
 }
-/* line 56, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-active {
+/* line 60, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-active {
   background-color: #5897fb;
   color: #fff;
 }
-/* line 60, ../sass/selector.scss */
-.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-option-disabled {
+/* line 64, ../sass/selector.scss */
+.slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option-disabled {
   cursor: default;
   color: #ccc;
 }

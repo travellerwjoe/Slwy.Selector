@@ -10,9 +10,8 @@
     var prefix = 'slwy',
         tpl = {
             selector: '<div class="' + prefix + '-selector"></div>',
-            dropdown: '<div class="' + prefix + '-selector-dropdown">' +
-            '<div class="' + prefix + '-selector-title"></div>' +
-            '</div>',
+            dropdown: '<div class="' + prefix + '-selector-dropdown"></div>',
+            title: '<div class="' + prefix + '-selector-title"></div>',
             optionsList: '<ul class="' + prefix + '-selector-options-list"></ul>',
             search: '<div class="' + prefix + '-selector-search"><input type="search" class="' + prefix + '-selector-search-input" autocomplete="off"></div>'
         },
@@ -125,6 +124,7 @@
     function Selector(options, $srcElement) {
         var defaults = {
             title: '支持中文搜索',
+            titleBar: true,
             data: null,
             showField: '',
             showRight: false,
@@ -151,7 +151,6 @@
         var self = this,
             viewIndex = viewCount - 1
         $(document).on(events.keydownEvent, function (e) {
-            console.log(e.keyCode)
             if (self.$selector.is(':hidden')) {
                 return
             }
@@ -215,6 +214,10 @@
     }
 
     Selector.prototype.render = function () {
+        if (this.options.titleBar) {
+            var $title = $(tpl.title).text(this.options.title)
+            this.$selector.prepend($title)
+        }
         this.$selector.append(this.dropdown.$dropdown)
     }
 
@@ -228,7 +231,6 @@
     }
 
     Dropdown.prototype.init = function () {
-        this.$dropdown.find('.' + prefix + '-selector-title').text(this.selector.options.title)
         this.bind()
         this.render(this.selector.data)
     }
@@ -242,9 +244,9 @@
             self.hoverIndex = $(this).index()
         }).on(events.clickEvent, 'li', function (e) {
             if ($(this).hasClass(className.disabledClassName)) return
-            var index  = $(this).index(),
+            var index = $(this).index(),
                 data = self.selector.data[index],
-                text = data[self.selector.options.showField],
+                text = typeof data === 'object' ? data[self.selector.options.showField] : data,
                 activeClassName = className.activeClassName
             self.selector.$srcElement.trigger({
                 type: 'selected',
@@ -258,29 +260,35 @@
 
     Dropdown.prototype.render = function (data) {
         this.$optionsList.html('')
-        if (!data.length) return
         var html = '',
             // len = data.length > 15 ? 15 : data.length
             len = data.length
-        console.log(len)
-        for (var i = 0; i < len; i++) {
-            var clsName = prefix + '-selector-option ',
-                leftClsName = prefix + '-selector-option-left',
-                rightClsName = prefix + '-selector-option-right',
-                item = data[i]
-            if (item.disabled || item.Disabled) {
-                clsName += className.disabledClassName
-            }
-            html += '<li class="' + clsName + '">'
-            if (!this.selector.options.showRight) {
-                html += item[this.selector.options.showField]
-            } else {
-                html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
-                html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
-            }
-            html += '</li>'
-        }
+        if (!len) {
+            html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
+        } else {
+            for (var i = 0; i < len; i++) {
+                var clsName = prefix + '-selector-option ',
+                    leftClsName = prefix + '-selector-option-left',
+                    rightClsName = prefix + '-selector-option-right',
+                    item = data[i]
 
+                if (item.disabled || item.Disabled) {
+                    clsName += className.disabledClassName
+                }
+                html += '<li class="' + clsName + '">'
+                if (typeof item === 'object') {
+                    if (!this.selector.options.showRight) {
+                        html += item[this.selector.options.showField]
+                    } else {
+                        html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
+                        html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
+                    }
+                } else {
+                    html += item
+                }
+                html += '</li>'
+            }
+        }
         this.$optionsList.html(html).appendTo(this.$dropdown)
     }
 
@@ -295,7 +303,7 @@
 
     Search.prototype.render = function (decorated) {
         decorated.call(this)
-        this.dropdown.$dropdown.find('.' + prefix + '-selector-title').after(this.$search)
+        this.dropdown.$dropdown.prepend(this.$search)
         this.$search.find('input').attr('placeholder', this.options.searchPlaceholder)
     }
 

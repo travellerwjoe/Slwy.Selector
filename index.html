@@ -51,6 +51,7 @@
         $.get('/IntCarrier.json', function (data) {
             var options = {
                 title: '支持中文|代码搜索',
+                // titleBar: false,
                 data: data,
                 showField: 'CarrierName',
                 showRight: true,
@@ -59,9 +60,9 @@
                 searchPlaceholder: '搜索航空公司'
             }
             $('#Airline').SlwySelector(options)
-                /*.on('selected', function (e) {
-                    console.log(e.value)
-                })*/
+            /*.on('selected', function (e) {
+                console.log(e.value)
+            })*/
         })
     </script>
 </body>
