@@ -148,9 +148,7 @@
 
     Selector.prototype.bind = function () {
         var self = this,
-            viewIndex = viewCount - 1,
-            lastHoverStartIndex,//最后滚动时列表该页的第一个索引
-            lastHoverEndIndex = 9 //最后滚动时列表该页的最后一个索引
+            viewIndex = viewCount - 1
         $(document).on(events.keydownEvent, function (e) {
             if (self.$selector.is(':hidden')) {
                 return
@@ -160,27 +158,31 @@
                 hoverIndex = self.dropdown.hoverIndex,
                 hoverClassName = className.hoverClassName,
                 $hoverItem = self.dropdown.$optionsList.find('.' + hoverClassName),
+                listHeight = self.dropdown.$optionsList.outerHeight(),
+                liHeight = self.dropdown.$optionsList.find('li').outerHeight(),
                 listScrollTop = self.dropdown.$optionsList.scrollTop(),
-                scrollOffset
+                scrollOffset,
+                viewStartScrollTop = listScrollTop,//当前列表显示的第一个元素的滚动高度
+                viewEndScrollTop = viewStartScrollTop + listHeight,//当前列表显示的最后一个元素的滚动高度
+                curScrollTop //当前li的滚动高度
             if (keyCode === 38) {
                 hoverIndex = hoverIndex > 0 ? hoverIndex - 1 : 0
+                //跳过disabled li元素
                 while ($hoverItem.prev().hasClass(className.disabledClassName)) {
                     hoverIndex--
                     $hoverItem = $hoverItem.removeClass(hoverClassName).prev()
                 }
-                scrollOffset = hoverIndex > lastHoverStartIndex ? listScrollTop : hoverIndex * 30
-                if (hoverIndex < lastHoverEndIndex - viewIndex) {
-                    lastHoverStartIndex = hoverIndex
-                }
-                lastHoverEndIndex = lastHoverStartIndex + viewIndex
+                curScrollTop = hoverIndex * liHeight
+                scrollOffset = curScrollTop > viewStartScrollTop ? listScrollTop : hoverIndex * 30
             } else if (keyCode === 40) {
                 hoverIndex = hoverIndex < self.data.length - 1 ? hoverIndex + 1 : self.data.length - 1
+                //跳过disabled li元素
                 while ($hoverItem.next().hasClass(className.disabledClassName)) {
                     hoverIndex++
                     $hoverItem = $hoverItem.removeClass(hoverClassName).next()
                 }
-                scrollOffset = hoverIndex >= lastHoverEndIndex ? (hoverIndex - viewIndex) * 30 : listScrollTop
-                lastHoverStartIndex = hoverIndex - viewIndex
+                curScrollTop = hoverIndex * liHeight
+                scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * 30 : listScrollTop
             } else if (keyCode === 13) {
                 self.$srcElement.trigger({
                     type: 'selected',
@@ -192,6 +194,9 @@
             self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
             self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
+
+            // viewEndScrollTop = viewStartScrollTop + listHeight
+            // console.log(viewStartScrollTop,viewEndScrollTop)
         })
 
         if (this.$srcElement.is('input')) {
