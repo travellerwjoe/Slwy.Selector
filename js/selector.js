@@ -33,7 +33,8 @@
             activeClassName: prefix + '-selector-active',
             disabledClassName: prefix + '-selector-option-disabled'
         },
-        viewCount = 10 //列表每页显示数量
+        viewCount = 10, //列表每页显示数量
+        specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
 
 
 
@@ -150,6 +151,7 @@
         var self = this,
             viewIndex = viewCount - 1
         $(document).on(events.keydownEvent, function (e) {
+            console.log(e.keyCode)
             if (self.$selector.is(':hidden')) {
                 return
             }
@@ -194,9 +196,6 @@
             self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
             self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
-
-            // viewEndScrollTop = viewStartScrollTop + listHeight
-            // console.log(viewStartScrollTop,viewEndScrollTop)
         })
 
         if (this.$srcElement.is('input')) {
@@ -243,8 +242,9 @@
             self.hoverIndex = $(this).index()
         }).on(events.clickEvent, 'li', function (e) {
             if ($(this).hasClass(className.disabledClassName)) return
-            var data = $(this).data('data'),
-                text = $(this).data('text'),
+            var index  = $(this).index(),
+                data = self.selector.data[index],
+                text = data[self.selector.options.showField],
                 activeClassName = className.activeClassName
             self.selector.$srcElement.trigger({
                 type: 'selected',
@@ -259,30 +259,29 @@
     Dropdown.prototype.render = function (data) {
         this.$optionsList.html('')
         if (!data.length) return
-        var lis = [],
+        var html = '',
             // len = data.length > 15 ? 15 : data.length
             len = data.length
+        console.log(len)
         for (var i = 0; i < len; i++) {
             var clsName = prefix + '-selector-option ',
-                $li
-            if (data[i].disabled || data[i].Disabled) {
+                leftClsName = prefix + '-selector-option-left',
+                rightClsName = prefix + '-selector-option-right',
+                item = data[i]
+            if (item.disabled || item.Disabled) {
                 clsName += className.disabledClassName
             }
-            $li = $('<li>').addClass(clsName).data({
-                data: data[i],
-                text: data[i][this.selector.options.showField]
-            })
+            html += '<li class="' + clsName + '">'
             if (!this.selector.options.showRight) {
-                $li.text(data[i][this.selector.options.showField])
+                html += item[this.selector.options.showField]
             } else {
-                var $left = $('<span>').addClass(prefix + '-selector-option-left').text(data[i][this.selector.options.showField]),
-                    $right = $('<span>').addClass(prefix + '-selector-option-right').text(data[i][this.selector.options.showRightFiled])
-                $li.append($left, $right)
+                html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
+                html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
             }
-            lis.push($li)
+            html += '</li>'
         }
 
-        this.$optionsList.append(lis).appendTo(this.$dropdown)
+        this.$optionsList.html(html).appendTo(this.$dropdown)
     }
 
     function Search(decorated) {
@@ -303,33 +302,54 @@
     Search.prototype.bind = function (decorated) {
         decorated.call(this)
         var self = this
-        this.$search.on(events.keyupEvent + ' ' + events.inputEvent, 'input[type=search]', function (e) {
+        this.$search.find('input').on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
             var keyCode = e.keyCode || e.which
-            if (keyCode === 13) return
+            for (var i = 0; i < specialKeyCode.length; i++) {
+                var item = specialKeyCode[i].toString(),
+                    arr
+                if (item.indexOf('-') >= 0) {
+                    arr = item.split('-')
+                    if (keyCode >= arr[0] || keyCode <= arr[1]) {
+                        return
+                    }
+                } else {
+                    if (keyCode == item) {
+                        return
+                    }
+                }
+            }
+            console.time('search')
             self.filter($(this).val())
+            console.timeEnd('search')
         })
     }
 
     Search.prototype.filter = function (decorated, keyword) {
         decorated.call(this)
+        console.time('loop')
         var field = this.options.showField,
             rightField = this.options.showRight ? this.options.showRightFiled : null,
             filterData = [],
             reg = new RegExp('^' + keyword.toUpperCase() + '.*')
 
         if (keyword) {
-            $.each(this.data, function (index, item) {
+            // $.each(this.data, function (index, item) {
+            for (var i = 0; i < this.data.length; i++) {
+                var item = this.data[i]
                 if (reg.test(item[field].toUpperCase())) {
                     filterData.push(item)
                 }
                 if (rightField && reg.test(item[rightField].toUpperCase())) {
                     filterData.push(item)
                 }
-            })
+            }
         } else {
             filterData = this.data
         }
+        console.timeEnd('loop')
+        console.time('render')
         this.dropdown.render(filterData)
+        console.timeEnd('render')
     }
 
 
@@ -342,9 +362,4 @@
         }
         return $(this);
     }
-
-    // var SelectorWithDropdown = Decorate(Selector, Dropdown)
-    /*var SelectorWithSearch = Decorate(Selector, Search)
-    var s = new SelectorWithDropdown()
-    var s2 = new SelectorWithSearch()*/
 }))

@@ -49,23 +49,25 @@
   padding: 5px 10px;
   font-size: 15px;
   cursor: pointer;
+  position: relative;
 }
-/* line 47, ../sass/selector.scss */
+/* line 48, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option .slwy-selector-option-right {
-  float: right;
+  position: absolute;
+  right: 10px;
 }
-/* line 50, ../sass/selector.scss */
+/* line 52, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-hover {
   background-color: #eee;
   color: #003b9f;
 }
-/* line 54, ../sass/selector.scss */
+/* line 56, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-active {
   background-color: #5897fb;
   color: #fff;
 }
-/* line 58, ../sass/selector.scss */
+/* line 60, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-option-disabled {
   cursor: default;
-  color: #ddd;
+  color: #ccc;
 }
