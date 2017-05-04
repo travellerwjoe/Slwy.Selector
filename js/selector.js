@@ -13,7 +13,8 @@
             dropdown: '<div class="' + prefix + '-selector-dropdown"></div>',
             title: '<div class="' + prefix + '-selector-title"></div>',
             optionsList: '<ul class="' + prefix + '-selector-options-list"></ul>',
-            search: '<div class="' + prefix + '-selector-search"><input type="search" class="' + prefix + '-selector-search-input" autocomplete="off"></div>'
+            search: '<div class="' + prefix + '-selector-search"><input type="search" class="' + prefix + '-selector-search-input" autocomplete="off"></div>',
+            opener: '<div class="' + prefix + '-selector ' + prefix + '-selector-opener"></div>'
         },
         namespace = '.' + prefix + '.selector',
         events = {
@@ -125,7 +126,7 @@
         var defaults = {
             title: '支持中文搜索',
             titleBar: true,
-            data: null,
+            data: [],
             showField: '',
             showRight: false,
             showRightFiled: '',
@@ -145,6 +146,7 @@
         this.$selector.appendTo('body')
         this.bind()
         this.render()
+        this.setPosition()
     }
 
     Selector.prototype.bind = function () {
@@ -197,20 +199,32 @@
             self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
         })
 
-        if (this.$srcElement.is('input')) {
-            this.$srcElement.on(events.clickEvent, function (e) {
-                self.$selector.show()
-            }).on(events.selectedEvent, function (e) {
+        // if (this.$srcElement.is('input')) {
+        this.$srcElement.on(events.clickEvent, function (e) {
+            self.show()
+        }).on(events.selectedEvent, function (e) {
+            if ($(this).is('input')) {
                 $(this).val(e.text)
-                self.$selector.hide()
-            })
+            } else if ($(this).is('select')) {
+                $(this).val(e.value.value)
+                self.$opener.text(e.text)
+            }
+            self.hide()
+        })
+        $(document).on(events.clickEvent, function (e) {
+            if ($(e.target).is(self.$opener || self.$srcElement) || self.$selector.find($(e.target)).length) {
+                return
+            }
+            self.hide()
+        })
+        /*} else if (this.$srcElement.is('select')) {
             $(document).on(events.clickEvent, function (e) {
-                if ($(e.target).is(self.$srcElement) || self.$selector.find($(e.target)).length) {
+                if ($(e.target).is(self.$opener) || self.$selector.find($(e.target)).length) {
                     return
                 }
-                self.$selector.hide()
+                self.hide()
             })
-        }
+        }*/
     }
 
     Selector.prototype.render = function () {
@@ -219,6 +233,28 @@
             this.$selector.prepend($title)
         }
         this.$selector.append(this.dropdown.$dropdown)
+    }
+
+    Selector.prototype.show = function () {
+        this.$selector.show()
+        this.$opener && this.$opener.addClass(prefix + '-selector-opener-expanded')
+    }
+
+    Selector.prototype.hide = function () {
+        this.$selector.hide()
+        this.$opener && this.$opener.removeClass(prefix + '-selector-opener-expanded')
+    }
+
+    Selector.prototype.setPosition = function () {
+        var $relativeEl = this.$opener || this.$srcElement,
+            offset = $relativeEl.offset(),
+            height = $relativeEl.outerHeight(),
+            width = $relativeEl.outerWidth()
+        this.$selector.css({
+            top: offset.top + height - 2,
+            left: offset.left,
+            width: width
+        })
     }
 
     function Dropdown(selector) {
@@ -231,8 +267,9 @@
     }
 
     Dropdown.prototype.init = function () {
+        var data = this.selector.data.length ? this.selector.data : this.selector.getSelectOptionData()
         this.bind()
-        this.render(this.selector.data)
+        this.render(data)
     }
 
     Dropdown.prototype.bind = function () {
@@ -245,8 +282,8 @@
         }).on(events.clickEvent, 'li', function (e) {
             if ($(this).hasClass(className.disabledClassName)) return
             var index = $(this).index(),
-                data = self.selector.data[index],
-                text = typeof data === 'object' ? data[self.selector.options.showField] : data,
+                data = self.selector.data.length ? self.selector.data[index] : self.selector.optionsData[index],
+                text = typeof data === 'object' ? self.selector.data.length ? data[self.selector.options.showField] : data.text : data,
                 activeClassName = className.activeClassName
             self.selector.$srcElement.trigger({
                 type: 'selected',
@@ -276,15 +313,24 @@
                     clsName += className.disabledClassName
                 }
                 html += '<li class="' + clsName + '">'
-                if (typeof item === 'object') {
-                    if (!this.selector.options.showRight) {
-                        html += item[this.selector.options.showField]
+                if (this.selector.data.length) {
+                    if (typeof item === 'object') {
+                        if (!this.selector.options.showRight) {
+                            html += item[this.selector.options.showField]
+                        } else {
+                            html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
+                            html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
+                        }
                     } else {
-                        html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
-                        html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
+                        html += item
                     }
-                } else {
-                    html += item
+                } else if (this.selector.optionsData.length) {
+                    if (item.rightText && this.selector.options.showRight) {
+                        html += '<span class="' + leftClsName + '">' + item.text + '</span>'
+                        html += '<span class="' + rightClsName + '">' + item.rightText + '</span>'
+                    } else {
+                        html += item.text
+                    }
                 }
                 html += '</li>'
             }
@@ -335,24 +381,23 @@
     Search.prototype.filter = function (decorated, keyword) {
         decorated.call(this)
         console.time('loop')
-        var field = this.options.showField,
-            rightField = this.options.showRight ? this.options.showRightFiled : null,
+        var field = this.data.length ? this.options.showField : 'text',
+            rightField = this.options.showRight ? this.data.length ? this.options.showRightFiled : 'rightText' : null,
+            data = this.data.length ? this.data : this.optionsData,
             filterData = [],
             reg = new RegExp('^' + keyword.toUpperCase() + '.*')
-
         if (keyword) {
-            // $.each(this.data, function (index, item) {
-            for (var i = 0; i < this.data.length; i++) {
-                var item = this.data[i]
+            for (var i = 0; i < data.length; i++) {
+                var item = data[i]
                 if (reg.test(item[field].toUpperCase())) {
                     filterData.push(item)
                 }
-                if (rightField && reg.test(item[rightField].toUpperCase())) {
+                if (rightField && item[rightField] && reg.test(item[rightField].toUpperCase())) {
                     filterData.push(item)
                 }
             }
         } else {
-            filterData = this.data
+            filterData = data
         }
         console.timeEnd('loop')
         console.time('render')
@@ -360,14 +405,61 @@
         console.timeEnd('render')
     }
 
+    function Opener(decorated) {
+        this.$opener = $(tpl.opener)
+        this.optionsData = []
+        decorated.apply(this, Array.prototype.slice.call(arguments, 1))
+    }
+
+    Opener.prototype.init = function (decorated) {
+        decorated.call(this)
+    }
+
+    Opener.prototype.bind = function (decorated) {
+        decorated.call(this)
+        var self = this
+        this.$opener.on(events.clickEvent, function (e) {
+            self.show()
+        })
+    }
+
+    Opener.prototype.render = function (decorated) {
+        decorated.call(this)
+        var $selected = this.$srcElement.find('option:selected'),
+            selectedText = $selected.text(),
+            selectedValue = this.$srcElement.val()
+        this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
+    }
+
+    Opener.prototype.getSelectOptionData = function () {
+        var $options = this.$srcElement.find('option'),
+            data = []
+
+        $options.each(function (index, item) {
+            var text = $(item).text(),
+                rightText = $(item).data('right'),
+                value = $(item).attr('value')
+            data.push({
+                text: text,
+                rightText: rightText,
+                value: value
+            })
+        })
+        this.optionsData = data
+        return data;
+    }
+
 
     $.fn.SlwySelector = function (options) {
+        var S = Selector
         if (options.search) {
-            var SelectorWithSearch = Decorate(Selector, Search)
-            var s = new SelectorWithSearch(options, $(this))
-        } else {
-            var s = new Selector(options, $(this))
+            S = Decorate(S, Search)
         }
+        if ($(this).is('select')) {
+            S = Decorate(S, Opener)
+        }
+        new S(options, $(this))
+
         return $(this);
     }
 }))

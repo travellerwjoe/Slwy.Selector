@@ -17,9 +17,8 @@
 }
 /* line 19, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown {
-  min-width: 300px;
   background-color: #fff;
-  border: 1px solid #eee;
+  border: 1px solid #aaa;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
@@ -62,16 +61,39 @@
 }
 /* line 56, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-hover {
-  background-color: #eee;
-  color: #003b9f;
+  background-color: #5897fb !important;
+  color: #fff;
 }
 /* line 60, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-active {
-  background-color: #5897fb;
-  color: #fff;
+  background-color: #ddd;
 }
 /* line 64, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option-disabled {
   cursor: default;
   color: #ccc;
+}
+/* line 71, ../sass/selector.scss */
+.slwy-selector.slwy-selector-opener {
+  position: relative;
+  display: inline-block;
+  border: 1px solid #aaa;
+  min-width: 150px;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 15px;
+  padding: 5px 20px 5px 8px;
+}
+/* line 86, ../sass/selector.scss */
+.slwy-selector.slwy-selector-opener:after {
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAnElEQVQoU2NkIBEwkqiegXwNnZ2dBYyMjP3YbPz//39heXn5BJAc3IZVq1YxP3jw4CQDA4MxmqazCgoK5mFhYX9RNIA4PT09xv/+/QNpYoZq+svExGReUlJyFmYIhh+6urpAVudDFUwsKysrQLYRQ8PUqVN5vnz5ch2kiIeHRzM7O/sLXg0gyc7OzgAQXV5evgE9EMgPVmIjkGQbAM3XKw1uNWlcAAAAAElFTkSuQmCC");
+  position: absolute;
+  right: 10px;
+}
+/* line 92, ../sass/selector.scss */
+.slwy-selector.slwy-selector-opener.slwy-selector-opener-expanded:after {
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABiSURBVChTYxgioLOzMwCEoVz8YMqUKTxAxY9BGMSGCuMGXV1dE4D4PxRPgApjBz09PcZAk//ANIDYIDGoNCpYtWoVM1DBGSTTYZrOgOSgyhCgo6OjAF0xDIPkoMoGH2BgAAAVKUsRXG9xaAAAAABJRU5ErkJggg==");
 }
