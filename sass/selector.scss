@@ -47,23 +47,33 @@ $activeBgColor:#5897fb;
             li{
                 padding:5px 10px;
                 font-size:15px;
-                cursor:pointer;
-                position: relative;
-                .#{$prefix}-selector-option-right{
-                    position: absolute;
-                    right:10px;
+                &.#{$prefix}-selector-option{
+                    cursor:pointer;
+                    position: relative;
+                    .#{$prefix}-selector-option-right{
+                        position: absolute;
+                        right:10px;
+                    }
+                    &.#{$prefix}-selector-hover{
+                        background-color: $activeBgColor!important;
+                        color:#fff;
+                    }
+                    &.#{$prefix}-selector-active{
+                        background-color:#ddd;
+                        // color:$mainColor;
+                    }
                 }
-                &.#{$prefix}-selector-hover{
-                    background-color: $activeBgColor!important;
-                    color:#fff;
-                }
-                &.#{$prefix}-selector-active{
-                    background-color:#ddd;
-                    // color:$mainColor;
+                &.#{$prefix}-selector-optgroup{
+                    font-weight: bold;
                 }
                 &.#{$prefix}-selector-option-disabled{
                     cursor:default;
                     color:#ccc;
+                }
+            }
+            &.#{$prefix}-selector-has-optgroup{
+                .#{$prefix}-selector-option{
+                    padding-left:20px;
                 }
             }
         }

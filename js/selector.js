@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.9.3
+ * @version v0.10.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -36,7 +36,10 @@
         className = {
             hoverClassName: prefix + '-selector-hover',
             activeClassName: prefix + '-selector-active',
-            disabledClassName: prefix + '-selector-option-disabled'
+            disabledClassName: prefix + '-selector-option-disabled',
+            optionClassName: prefix + '-selector-option',
+            optgroupClassName: prefix + '-selector-optgroup',
+            hasOptgroupClassName: prefix + '-selector-has-optgroup'
         },
         viewCount = 10, //列表每页显示数量
         specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
@@ -161,45 +164,39 @@
                 viewEndScrollTop = viewStartScrollTop + listHeight,//当前列表显示的最后一个元素的滚动高度
                 curScrollTop //当前li的滚动高度
             if (keyCode === 38) {
+                //上移
                 var $prevItem = $hoverItem.prev().length ? $hoverItem.prev() : self.dropdown.$optionsList.find('li').last()
                 hoverIndex = hoverIndex > 0 ? hoverIndex - 1 : 0
                 //跳过disabled li元素
-                while ($prevItem.hasClass(className.disabledClassName)) {
+                while ($prevItem.hasClass(className.disabledClassName) || $prevItem.hasClass(className.optgroupClassName)) {
                     hoverIndex--
                     $hoverItem = $prevItem = $prevItem.prev()
                 }
                 if (hoverIndex < 0) {
-                    $hoverItem = self.dropdown.$optionsList.find('li').not('.' + className.disabledClassName).first()
+                    $hoverItem = self.dropdown.$optionsList.find('li.' + className.optionClassName).not('.' + className.disabledClassName).first()
                     hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
                 scrollOffset = curScrollTop > viewStartScrollTop ? listScrollTop : hoverIndex * 30
             } else if (keyCode === 40) {
-                var len = self.data.length || self.optionsData.length,
+                //下移
+                var len = self.dropdown.$optionsList.find('li').length,
                     $nextItem = $hoverItem.next().length ? $hoverItem.next() : self.dropdown.$optionsList.find('li').first()
                 hoverIndex = hoverIndex < len - 1 ? hoverIndex + 1 : len - 1
                 //跳过disabled li元素
-                while ($nextItem.hasClass(className.disabledClassName)) {
-                    hoverIndex++
+                while ($nextItem.hasClass(className.disabledClassName) || $nextItem.hasClass(className.optgroupClassName)) {
                     // $hoverItem = $hoverItem.removeClass(hoverClassName).next()
+                    hoverIndex++
                     $hoverItem = $nextItem = $nextItem.next()
                 }
                 if (hoverIndex >= len) {
-                    $hoverItem = self.dropdown.$optionsList.find('li').not('.' + className.disabledClassName).last()
+                    $hoverItem = self.dropdown.$optionsList.find('li.' + className.optionClassName).not('.' + className.disabledClassName).last()
                     hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
                 scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * 30 : listScrollTop
             } else if (keyCode === 13) {
-                var data = self.data.length ? self.data[hoverIndex] : self.optionsData[hoverIndex],
-                    text = typeof data === 'object' ? self.data.length ? data[self.options.showField] : data.text : data
-                if (!data) return
-                self.$srcElement.trigger({
-                    type: 'selected',
-                    text: text,
-                    value: data
-                })
-                $hoverItem.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
+                self.triggerSelected($hoverItem)
             } else {
                 return
             }
@@ -258,6 +255,33 @@
         })
     }
 
+    Selector.prototype.triggerSelected = function ($targetEl) {
+        if ($targetEl.hasClass(className.disabledClassName)) return
+        var index = $targetEl.data('index'),
+            subindex = $targetEl.data('subindex'),
+            data = this.data.length ? this.data[index] : this.optionsData[index],
+            field = this.data.length ? this.options.showField : 'text',
+            text
+
+        if (!data) return
+        if (typeof data === 'object') {
+            if (data.optgroup && data.options && typeof subindex === 'number') {
+                data = data.options[subindex]
+            }
+            text = data[field]
+        } else {
+            text = data
+        }
+
+        this.$srcElement.trigger({
+            type: 'selected',
+            value: data,
+            text: text
+        })
+
+        $targetEl.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
+    }
+
     function Dropdown(selector) {
         this.selector = selector
         this.$dropdown = $(tpl.dropdown)
@@ -275,52 +299,40 @@
 
     Dropdown.prototype.bind = function () {
         var self = this
-        this.$optionsList.on(events.hoverEvent, 'li', function (e) {
+        this.$optionsList.on(events.hoverEvent, 'li.' + className.optionClassName, function (e) {
             if ($(this).hasClass(className.disabledClassName)) return
             var hoverClassName = className.hoverClassName
             $(this).addClass(hoverClassName).siblings().removeClass(hoverClassName)
             self.hoverIndex = $(this).index()
-        }).on(events.clickEvent, 'li', function (e) {
-            if ($(this).hasClass(className.disabledClassName)) return
-            var index = $(this).index(),
-                data = self.selector.data.length ? self.selector.data[index] : self.selector.optionsData[index],
-                text = typeof data === 'object' ? self.selector.data.length ? data[self.selector.options.showField] : data.text : data,
-                activeClassName = className.activeClassName
-            self.selector.$srcElement.trigger({
-                type: 'selected',
-                value: data,
-                text: text
-            })
-
-            $(this).addClass(activeClassName).siblings().removeClass(activeClassName)
+        }).on(events.clickEvent, 'li.' + className.optionClassName, function (e) {
+            self.selector.triggerSelected($(this))
         })
     }
 
     Dropdown.prototype.render = function (data) {
         this.$optionsList.html('')
         var html = '',
-            // len = data.length > 15 ? 15 : data.length
-            len = data.length
-        if (!len) {
-            html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
-        } else {
-            for (var i = 0; i < len; i++) {
-                var clsName = prefix + '-selector-option ',
-                    leftClsName = prefix + '-selector-option-left',
-                    rightClsName = prefix + '-selector-option-right',
-                    item = data[i]
-
+            showField = this.selector.options.showField,
+            showRightFiled = this.selector.options.showRightFiled,
+            showRight = this.selector.options.showRight,
+            len = data.length,
+            hasOptgroup = false,
+            each = function (item, index, subindex) {
+                var clsName = className.optionClassName,
+                    index = item.index || index,
+                    subindex = item.subindex || subindex,
+                    html
                 if (item.disabled || item.Disabled) {
-                    clsName += className.disabledClassName
+                    clsName += ' ' + className.disabledClassName
                 }
-                html += '<li class="' + clsName + '">'
+                html = '<li class="' + clsName + '" data-index="' + index + '"' + (typeof subindex === 'number' ? ' data-subindex="' + subindex + '"' : '') + '>'
                 if (this.selector.data.length) {
                     if (typeof item === 'object') {
-                        if (!this.selector.options.showRight) {
-                            html += item[this.selector.options.showField]
+                        if (!showRight) {
+                            html += item[showField]
                         } else {
-                            html += '<span class="' + leftClsName + '">' + item[this.selector.options.showField] + '</span>'
-                            html += '<span class="' + rightClsName + '">' + item[this.selector.options.showRightFiled] + '</span>'
+                            html += '<span class="' + leftClsName + '">' + item[showField] + '</span>'
+                            html += '<span class="' + rightClsName + '">' + item[showRightFiled] + '</span>'
                         }
                     } else {
                         html += item
@@ -334,8 +346,32 @@
                     }
                 }
                 html += '</li>'
+                return html
+            }
+
+        if (!len) {
+            html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
+        } else {
+            for (var i = 0; i < len; i++) {
+                var leftClsName = prefix + '-selector-option-left',
+                    rightClsName = prefix + '-selector-option-right',
+                    groupClsName = className.optgroupClassName,
+                    item = data[i]
+
+                if (item.optgroup && $.isArray(item.options)) {
+                    html += '<li class="' + groupClsName + '">'
+                    html += item.label
+                    html += '</li>'
+                    for (var m = 0; m < item.options.length; m++) {
+                        html += each.call(this, item.options[m], i, m)
+                    }
+                } else {
+                    html += each.call(this, item, i)
+                }
             }
         }
+        hasOptgroup = /optgroup/.test(html)
+        if (hasOptgroup) this.$optionsList.addClass(className.hasOptgroupClassName)
         this.$optionsList.html(html).appendTo(this.$dropdown)
     }
 
@@ -383,15 +419,35 @@
             rightField = this.options.showRight ? this.data.length ? this.options.showRightFiled : 'rightText' : null,
             data = this.data.length ? this.data : this.optionsData,
             filterData = [],
-            reg = new RegExp('^' + keyword.toUpperCase() + '.*')
+            reg = new RegExp('^' + keyword.toUpperCase() + '.*'),
+            each = function (data, item, index, subindex) {
+                item.index = index
+                if (typeof subindex === 'number') item.subindex = subindex
+                if (reg.test(item[field].toUpperCase())) {
+                    data.push(item)
+                }
+                if (rightField && item[rightField] && reg.test(item[rightField].toUpperCase())) {
+                    data.push(item)
+                }
+            }
         if (keyword) {
             for (var i = 0; i < data.length; i++) {
                 var item = data[i]
-                if (reg.test(item[field].toUpperCase())) {
-                    filterData.push(item)
-                }
-                if (rightField && item[rightField] && reg.test(item[rightField].toUpperCase())) {
-                    filterData.push(item)
+                if (item.optgroup && $.isArray(item.options)) {
+                    var obj = {
+                        label: item.label,
+                        options: []
+                    }
+                    if (reg.test(item.label.toUpperCase())) {
+                        obj.options = item.options
+                    } else {
+                        for (var m = 0; m < item.options.length; m++) {
+                            each.call(this, obj.options, item.options[m], i, m)
+                        }
+                    }
+                    !!obj.options.length && filterData.push(obj)
+                } else {
+                    each.call(this, filterData, item, i)
                 }
             }
         } else {
@@ -433,20 +489,41 @@
 
     Opener.prototype.getSelectOptionData = function () {
         var $options = this.$srcElement.find('option'),
-            data = []
+            $optgroup = !!this.$srcElement.find('optgroup').length ? this.$srcElement.find('optgroup') : null,
+            data = [],
+            eachOptions = function (data, item, index) {
+                var text = $(item).text(),
+                    rightText = $(item).data('right'),
+                    value = $(item).attr('value'),
+                    disabled = $(item).is(':disabled')
 
-        $options.each(function (index, item) {
-            var text = $(item).text(),
-                rightText = $(item).data('right'),
-                value = $(item).attr('value'),
-                disabled = $(item).is(':disabled')
-            data.push({
-                text: text,
-                rightText: rightText,
-                value: value,
-                disabled: disabled
+                data.push({
+                    text: text,
+                    rightText: rightText,
+                    value: value,
+                    disabled: disabled
+                })
+            }
+
+        if ($optgroup) {
+            $optgroup.each(function (index, item) {
+                var $options = $(item).find('option'),
+                    label = $(item).attr('label'),
+                    obj = {
+                        label: label,
+                        optgroup: true,
+                        options: []
+                    }
+                $options.each(function (i, opt) {
+                    eachOptions(obj.options, opt, i)
+                })
+                data.push(obj)
             })
-        })
+        } else {
+            $options.each(function (index, item) {
+                eachOptions(data, item, index)
+            })
+        }
         this.optionsData = data
         return data;
     }
