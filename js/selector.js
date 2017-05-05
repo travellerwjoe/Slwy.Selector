@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.9.2 - alpha
+ * @version v0.9.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -19,7 +19,7 @@
             title: '<div class="' + prefix + '-selector-title"></div>',
             optionsList: '<ul class="' + prefix + '-selector-options-list"></ul>',
             search: '<div class="' + prefix + '-selector-search"><input type="search" class="' + prefix + '-selector-search-input" autocomplete="off"></div>',
-            opener: '<div class="' + prefix + '-selector ' + prefix + '-selector-opener"></div>'
+            opener: '<div class="' + prefix + '-selector ' + prefix + '-selector-opener" tabindex="0"></div>'
         },
         namespace = '.' + prefix + '.selector',
         events = {
@@ -237,7 +237,8 @@
 
     Selector.prototype.show = function () {
         this.$selector.show()
-        this.$opener && this.$opener.addClass(prefix + '-selector-opener-expanded')
+        this.$opener && this.$opener.addClass(prefix + '-selector-opener-expanded').blur()
+        this.$search && this.$search.find('input').focus()
     }
 
     Selector.prototype.hide = function () {
@@ -372,15 +373,12 @@
                     }
                 }
             }
-            console.time('search')
             self.filter($(this).val())
-            console.timeEnd('search')
         })
     }
 
     Search.prototype.filter = function (decorated, keyword) {
         decorated.call(this)
-        console.time('loop')
         var field = this.data.length ? this.options.showField : 'text',
             rightField = this.options.showRight ? this.data.length ? this.options.showRightFiled : 'rightText' : null,
             data = this.data.length ? this.data : this.optionsData,
@@ -399,10 +397,7 @@
         } else {
             filterData = data
         }
-        console.timeEnd('loop')
-        console.time('render')
         this.dropdown.render(filterData)
-        console.timeEnd('render')
     }
 
     function Opener(decorated) {
@@ -420,6 +415,11 @@
         var self = this
         this.$opener.on(events.clickEvent, function (e) {
             self.show()
+        }).on(events.keyupEvent, function (e) {
+            var keyCode = e.keyCode || e.which
+            if (keyCode === 13) {
+                self.show()
+            }
         })
     }
 
