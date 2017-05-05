@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.9.0 - alpha
+ * @version v0.9.1 - alpha
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -161,28 +161,42 @@
                 viewEndScrollTop = viewStartScrollTop + listHeight,//当前列表显示的最后一个元素的滚动高度
                 curScrollTop //当前li的滚动高度
             if (keyCode === 38) {
+                var $prevItem = $hoverItem.prev().length ? $hoverItem.prev() : self.dropdown.$optionsList.find('li').last()
                 hoverIndex = hoverIndex > 0 ? hoverIndex - 1 : 0
                 //跳过disabled li元素
-                while ($hoverItem.prev().hasClass(className.disabledClassName)) {
+                while ($prevItem.hasClass(className.disabledClassName)) {
                     hoverIndex--
-                    $hoverItem = $hoverItem.removeClass(hoverClassName).prev()
+                    $hoverItem = $prevItem = $prevItem.prev()
+                }
+                if (hoverIndex < 0) {
+                    $hoverItem = self.dropdown.$optionsList.find('li').not('.' + className.disabledClassName).first()
+                    hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
                 scrollOffset = curScrollTop > viewStartScrollTop ? listScrollTop : hoverIndex * 30
             } else if (keyCode === 40) {
-                hoverIndex = hoverIndex < self.data.length - 1 ? hoverIndex + 1 : self.data.length - 1
+                var len = self.data.length || self.optionsData.length,
+                    $nextItem = $hoverItem.next().length ? $hoverItem.next() : self.dropdown.$optionsList.find('li').first()
+                hoverIndex = hoverIndex < len - 1 ? hoverIndex + 1 : len - 1
                 //跳过disabled li元素
-                while ($hoverItem.next().hasClass(className.disabledClassName)) {
+                while ($nextItem.hasClass(className.disabledClassName)) {
                     hoverIndex++
-                    $hoverItem = $hoverItem.removeClass(hoverClassName).next()
+                    // $hoverItem = $hoverItem.removeClass(hoverClassName).next()
+                    $hoverItem = $nextItem = $nextItem.next()
+                }
+                if (hoverIndex >= len) {
+                    $hoverItem = self.dropdown.$optionsList.find('li').not('.' + className.disabledClassName).last()
+                    hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
                 scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * 30 : listScrollTop
             } else if (keyCode === 13) {
+                var data = self.data.length ? self.data[hoverIndex] : self.optionsData[hoverIndex],
+                    text = typeof data === 'object' ? self.data.length ? data[self.options.showField] : data.text : data
                 self.$srcElement.trigger({
                     type: 'selected',
-                    text: $hoverItem.data('text'),
-                    value: $hoverItem.data('data')
+                    text: text,
+                    value: data
                 })
                 $hoverItem.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
             }

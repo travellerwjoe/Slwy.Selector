@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="stylesheets/selector.css">
+    <link rel="stylesheet" href="dist/jquery.Slwy.Selector.min.css">
     <title>Slwy-Selector</title>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
@@ -23,7 +23,7 @@
         <option value="CA" data-right="CA" disabled>中国国际航空</option>
         <option value="MU" data-right="MU">东方航空</option>
         <option value="CZ">南方航空</option>
-        <option value="FM">上海航空</option>
+        <option value="FM" disabled>上海航空</option>
     </select>
     <pre>
         <code>
@@ -32,7 +32,7 @@
             &lt;option value="CA" data-right="CA" disabled&gt;中国国际航空&lt;/option&gt;
             &lt;option value="MU" data-right="MU"&gt;东方航空&lt;/option&gt;
             &lt;option value="CZ"&gt;南方航空&lt;/option&gt;
-            &lt;option value="FM"&gt;上海航空&lt;/option&gt;
+            &lt;option value="FM" disabled&gt;上海航空&lt;/option&gt;
         &lt;/select&gt;
 
         //JS
@@ -78,7 +78,8 @@
     </pre>
 
     <script src="js/jquery.1.8.3.min.js"></script>
-    <script src="js/selector.js"></script>
+    <!--<script src="js/selector.js"></script>-->
+    <script src="dist/jquery.Slwy.Selector.min.js"></script>
     <script>
         hljs.initHighlightingOnLoad();
         $.get('/data.json', function (data) {
