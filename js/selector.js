@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.9.1 - alpha
+ * @version v0.9.2 - alpha
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -193,12 +193,15 @@
             } else if (keyCode === 13) {
                 var data = self.data.length ? self.data[hoverIndex] : self.optionsData[hoverIndex],
                     text = typeof data === 'object' ? self.data.length ? data[self.options.showField] : data.text : data
+                if (!data) return
                 self.$srcElement.trigger({
                     type: 'selected',
                     text: text,
                     value: data
                 })
                 $hoverItem.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
+            } else {
+                return
             }
             self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
