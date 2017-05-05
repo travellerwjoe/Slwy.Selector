@@ -86,6 +86,8 @@
 }
 /* line 81, ../sass/selector.scss */
 .slwy-selector.slwy-selector-opener {
+  box-sizing: border-box;
+  height: 30px;
   position: relative;
   display: inline-block;
   border: 1px solid #aaa;
@@ -98,13 +100,13 @@
   font-size: 15px;
   padding: 5px 20px 5px 8px;
 }
-/* line 96, ../sass/selector.scss */
+/* line 98, ../sass/selector.scss */
 .slwy-selector.slwy-selector-opener:after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAnElEQVQoU2NkIBEwkqiegXwNnZ2dBYyMjP3YbPz//39heXn5BJAc3IZVq1YxP3jw4CQDA4MxmqazCgoK5mFhYX9RNIA4PT09xv/+/QNpYoZq+svExGReUlJyFmYIhh+6urpAVudDFUwsKysrQLYRQ8PUqVN5vnz5ch2kiIeHRzM7O/sLXg0gyc7OzgAQXV5evgE9EMgPVmIjkGQbAM3XKw1uNWlcAAAAAElFTkSuQmCC");
   position: absolute;
   right: 10px;
 }
-/* line 102, ../sass/selector.scss */
+/* line 104, ../sass/selector.scss */
 .slwy-selector.slwy-selector-opener.slwy-selector-opener-expanded:after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABiSURBVChTYxgioLOzMwCEoVz8YMqUKTxAxY9BGMSGCuMGXV1dE4D4PxRPgApjBz09PcZAk//ANIDYIDGoNCpYtWoVM1DBGSTTYZrOgOSgyhCgo6OjAF0xDIPkoMoGH2BgAAAVKUsRXG9xaAAAAABJRU5ErkJggg==");
 }

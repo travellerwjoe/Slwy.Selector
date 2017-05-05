@@ -79,6 +79,8 @@ $activeBgColor:#5897fb;
         }
     }
     &.#{$prefix}-selector-opener{
+        box-sizing: border-box;
+        height: 30px;
         position: relative;
         display: inline-block;
         border:1px solid #aaa;

@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.0
+ * @version v0.10.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -436,6 +436,7 @@
                 if (item.optgroup && $.isArray(item.options)) {
                     var obj = {
                         label: item.label,
+                        optgroup: true,
                         options: []
                     }
                     if (reg.test(item.label.toUpperCase())) {
@@ -453,6 +454,7 @@
         } else {
             filterData = data
         }
+        console.log(filterData)
         this.dropdown.render(filterData)
     }
 
