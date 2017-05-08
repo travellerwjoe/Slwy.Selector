@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.1
+ * @version v0.10.2
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -338,7 +338,7 @@
                         html += item
                     }
                 } else if (this.selector.optionsData.length) {
-                    if (item.rightText && this.selector.options.showRight) {
+                    if (item.rightText) {
                         html += '<span class="' + leftClsName + '">' + item.text + '</span>'
                         html += '<span class="' + rightClsName + '">' + item.rightText + '</span>'
                     } else {
@@ -454,7 +454,6 @@
         } else {
             filterData = data
         }
-        console.log(filterData)
         this.dropdown.render(filterData)
     }
 
@@ -484,7 +483,8 @@
     Opener.prototype.render = function (decorated) {
         decorated.call(this)
         var $selected = this.$srcElement.find('option:selected'),
-            selectedText = $selected.text(),
+            showField = this.options.showField,
+            selectedText = !!this.data.length && (this.data[0].optgroup ? this.data[0].options[0][showField] : this.data[0][showField]) || $selected.text(),
             selectedValue = this.$srcElement.val()
         this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
     }
