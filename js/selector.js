@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.4
+ * @version v0.10.5
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -135,11 +135,11 @@
         this.data = this.options.data
         this.hasSetPosition = false
 
-        this.dropdown = new Dropdown(this)
-        this.init()
+        // this.init()
     }
 
     Selector.prototype.init = function (container) {
+        this.dropdown = new Dropdown(this)
         this.$selector.appendTo('body')
         this.bind()
         this.render()
@@ -204,7 +204,7 @@
             }
             self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
-            !!$hoverItem.length && $hoverItem.addClass(hoverClassName).siblings().removeClass(hoverClassName)
+            hoverIndex >= 0 && self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
         })
 
         this.$srcElement.on(events.clickEvent, function (e) {
@@ -289,24 +289,6 @@
         $targetEl.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
     }
 
-    //从自定义数据中获取第一个非disabled作为selected数据
-    Selector.prototype.getSelectedFormData = function () {
-        var selected,
-            i = 0;
-        (function (data, index) {
-            do {
-                if (data[index].optgroup) {
-                    var m = 0
-                    arguments.callee.call(this, data[index].options, m)
-                } else {
-                    selected = data[index]
-                }
-                index++
-            } while (selected.Disabled || selected.disabled)
-        })(this.data, i)
-        return selected
-    }
-
     function Dropdown(selector) {
         this.selector = selector
         this.$dropdown = $(tpl.dropdown)
@@ -317,7 +299,7 @@
     }
 
     Dropdown.prototype.init = function () {
-        var data = this.selector.data.length ? this.selector.data : this.selector.getSelectOptionData()
+        var data = this.selector.data.length ? this.selector.data : this.selector.optionsData
         this.bind()
         this.render(data)
     }
@@ -349,6 +331,11 @@
                     html
                 if (item.disabled || item.Disabled) {
                     clsName += ' ' + className.disabledClassName
+                }
+                // if (this.selector.selected && showField && item[showField] == this.selector.selected[showField]) {
+                if (item == this.selector.selected) {
+
+                    clsName += ' ' + className.activeClassName
                 }
                 html = '<li class="' + clsName + '" data-index="' + index + '"' + (typeof subindex === 'number' ? ' data-subindex="' + subindex + '"' : '') + '>'
                 if (this.selector.data.length) {
@@ -497,6 +484,8 @@
     }
 
     Opener.prototype.init = function (decorated) {
+        this.selected = this.getSelectedFormData()
+        this.optionsData = this.getSelectOptionData()
         decorated.call(this)
     }
 
@@ -515,39 +504,53 @@
 
     Opener.prototype.render = function (decorated) {
         decorated.call(this)
-        var $selected = this.$srcElement.find('option:selected'),
-            showField = this.options.showField,
-            selectedText,
-            selectedValue
-
-        if (!!this.data.length) {
-            var selected = this.getSelectedFormData()
-            selectedText = selected[showField]
-            selectedValue = selected
-        } else {
-            selectedText = $selected.text()
-            selectedValue = this.$srcElement.val()
-        }
+        var showField = this.options.showField,
+            selectedText = !!this.data.length ? this.selected[showField] : this.selected.text,
+            selectedValue = this.selected
 
         this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
     }
 
+    //从自定义数据中获取第一个非disabled作为selected数据
+    Opener.prototype.getSelectedFormData = function () {
+        var selected = null,
+            i = 0;
+        if (!!this.data.length) {
+            (function (data, index) {
+                do {
+                    if (data[index].optgroup) {
+                        var m = 0
+                        arguments.callee.call(this, data[index].options, m)
+                    } else {
+                        selected = data[index]
+                    }
+                    index++
+                } while (selected.Disabled || selected.disabled)
+            })(this.data, i)
+        }
+        return selected
+    }
+
     Opener.prototype.getSelectOptionData = function () {
-        var $options = this.$srcElement.find('option'),
+        var self = this,
+            $options = this.$srcElement.find('option'),
             $optgroup = !!this.$srcElement.find('optgroup').length ? this.$srcElement.find('optgroup') : null,
             data = [],
             eachOptions = function (data, item, index) {
                 var text = $(item).text(),
                     rightText = $(item).data('right'),
                     value = $(item).attr('value'),
-                    disabled = $(item).is(':disabled')
-
-                data.push({
-                    text: text,
-                    rightText: rightText,
-                    value: value,
-                    disabled: disabled
-                })
+                    disabled = $(item).is(':disabled'),
+                    obj = {
+                        text: text,
+                        rightText: rightText,
+                        value: value,
+                        disabled: disabled
+                    }
+                if ($(item).is(':selected')) {
+                    self.selected = obj
+                }
+                data.push(obj)
             }
 
         if ($optgroup) {
@@ -569,7 +572,7 @@
                 eachOptions(data, item, index)
             })
         }
-        this.optionsData = data
+
         return data;
     }
 
@@ -582,7 +585,7 @@
         if ($(this).is('select')) {
             S = Decorate(S, Opener)
         }
-        new S(options, $(this))
+        new S(options, $(this)).init()
 
         return $(this);
     }
