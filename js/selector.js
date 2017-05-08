@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.3
+ * @version v0.10.4
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -204,7 +204,7 @@
             }
             self.dropdown.$optionsList.scrollTop(scrollOffset)
             self.dropdown.hoverIndex = hoverIndex
-            self.dropdown.$optionsList.find('li').removeClass(hoverClassName).eq(hoverIndex).addClass(hoverClassName)
+            !!$hoverItem.length && $hoverItem.addClass(hoverClassName).siblings().removeClass(hoverClassName)
         })
 
         this.$srcElement.on(events.clickEvent, function (e) {
@@ -287,6 +287,24 @@
         })
 
         $targetEl.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
+    }
+
+    //从自定义数据中获取第一个非disabled作为selected数据
+    Selector.prototype.getSelectedFormData = function () {
+        var selected,
+            i = 0;
+        (function (data, index) {
+            do {
+                if (data[index].optgroup) {
+                    var m = 0
+                    arguments.callee.call(this, data[index].options, m)
+                } else {
+                    selected = data[index]
+                }
+                index++
+            } while (selected.Disabled || selected.disabled)
+        })(this.data, i)
+        return selected
     }
 
     function Dropdown(selector) {
@@ -499,8 +517,18 @@
         decorated.call(this)
         var $selected = this.$srcElement.find('option:selected'),
             showField = this.options.showField,
-            selectedText = !!this.data.length && (this.data[0].optgroup ? this.data[0].options[0][showField] : this.data[0][showField]) || $selected.text(),
+            selectedText,
+            selectedValue
+
+        if (!!this.data.length) {
+            var selected = this.getSelectedFormData()
+            selectedText = selected[showField]
+            selectedValue = selected
+        } else {
+            selectedText = $selected.text()
             selectedValue = this.$srcElement.val()
+        }
+
         this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
     }
 
