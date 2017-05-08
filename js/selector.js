@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.5
+ * @version v0.10.6
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -30,7 +30,7 @@
             focusEvent: 'focus' + namespace,
             blurEvent: 'blur' + namespace,
             clickEvent: 'click' + namespace,
-            hoverEvent: 'hover' + namespace,
+            mouseenterEvent: 'mouseenter' + namespace,
             selectedEvent: 'selected' + namespace
         },
         className = {
@@ -306,7 +306,7 @@
 
     Dropdown.prototype.bind = function () {
         var self = this
-        this.$optionsList.on(events.hoverEvent, 'li.' + className.optionClassName, function (e) {
+        this.$optionsList.on(events.mouseenterEvent, 'li.' + className.optionClassName, function (e) {
             if ($(this).hasClass(className.disabledClassName)) return
             var hoverClassName = className.hoverClassName
             $(this).addClass(hoverClassName).siblings().removeClass(hoverClassName)

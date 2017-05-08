@@ -340,6 +340,8 @@
             width: 300,
             search: true,//是否显示搜索
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        }).on('propertychange', function () {
+            console.log('xxx')
         })
 
         $('select.demo-other-viewCount').SlwySelector({
