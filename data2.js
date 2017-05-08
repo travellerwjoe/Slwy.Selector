@@ -1,4 +1,4 @@
-[
+var data2 = [
     {
         "label": "国内航空公司",
         "optgroup": true,

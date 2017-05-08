@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v0.10.2
+ * @version v0.10.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -41,7 +41,6 @@
             optgroupClassName: prefix + '-selector-optgroup',
             hasOptgroupClassName: prefix + '-selector-has-optgroup'
         },
-        viewCount = 10, //列表每页显示数量
         specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
 
     function getMethods(theClass) {
@@ -126,12 +125,15 @@
             showRight: false,
             showRightFiled: '',
             search: false,
-            searchPlaceholder: '搜索'
+            searchPlaceholder: '搜索',
+            viewCount: 10,
+            width: null
         }
         this.options = $.extend(true, defaults, options)
         this.$selector = $(tpl.selector)
         this.$srcElement = $srcElement
         this.data = this.options.data
+        this.hasSetPosition = false
 
         this.dropdown = new Dropdown(this)
         this.init()
@@ -141,12 +143,11 @@
         this.$selector.appendTo('body')
         this.bind()
         this.render()
-        this.setPosition()
     }
 
     Selector.prototype.bind = function () {
         var self = this,
-            viewIndex = viewCount - 1
+            viewIndex = this.options.viewCount - 1
         $(document).on(events.keydownEvent, function (e) {
             if (self.$selector.is(':hidden')) {
                 return
@@ -163,6 +164,7 @@
                 viewStartScrollTop = listScrollTop,//当前列表显示的第一个元素的滚动高度
                 viewEndScrollTop = viewStartScrollTop + listHeight,//当前列表显示的最后一个元素的滚动高度
                 curScrollTop //当前li的滚动高度
+
             if (keyCode === 38) {
                 //上移
                 var $prevItem = $hoverItem.prev().length ? $hoverItem.prev() : self.dropdown.$optionsList.find('li').last()
@@ -177,7 +179,7 @@
                     hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
-                scrollOffset = curScrollTop > viewStartScrollTop ? listScrollTop : hoverIndex * 30
+                scrollOffset = curScrollTop > viewStartScrollTop ? listScrollTop : hoverIndex * liHeight
             } else if (keyCode === 40) {
                 //下移
                 var len = self.dropdown.$optionsList.find('li').length,
@@ -194,7 +196,7 @@
                     hoverIndex = $hoverItem.index()
                 }
                 curScrollTop = hoverIndex * liHeight
-                scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * 30 : listScrollTop
+                scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * liHeight : listScrollTop
             } else if (keyCode === 13) {
                 self.triggerSelected($hoverItem)
             } else {
@@ -234,6 +236,10 @@
 
     Selector.prototype.show = function () {
         this.$selector.show()
+        if (!this.hasSetPosition) {
+            this.setPosition()
+            this.dropdown.setListHeigth()
+        }
         this.$opener && this.$opener.addClass(prefix + '-selector-opener-expanded').blur()
         this.$search && this.$search.find('input').focus()
     }
@@ -247,12 +253,13 @@
         var $relativeEl = this.$opener || this.$srcElement,
             offset = $relativeEl.offset(),
             height = $relativeEl.outerHeight(),
-            width = $relativeEl.outerWidth()
+            width = typeof this.options.width === 'number' ? this.options.width : $relativeEl.outerWidth()
         this.$selector.css({
             top: offset.top + height - 2,
             left: offset.left,
             width: width
         })
+        this.hasSetPosition = true
     }
 
     Selector.prototype.triggerSelected = function ($targetEl) {
@@ -373,6 +380,14 @@
         hasOptgroup = /optgroup/.test(html)
         if (hasOptgroup) this.$optionsList.addClass(className.hasOptgroupClassName)
         this.$optionsList.html(html).appendTo(this.$dropdown)
+    }
+
+    Dropdown.prototype.setListHeigth = function () {
+        var liHeight = this.$optionsList.find('li').outerHeight(),
+            height = this.$optionsList.height() > liHeight * this.selector.options.viewCount ? liHeight * this.selector.options.viewCount : this.$optionsList.height()
+        this.$optionsList.css({
+            maxHeight: height
+        })
     }
 
     function Search(decorated) {

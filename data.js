@@ -1,4 +1,4 @@
-[
+var data = [
     {
         "KeyID": 0,
         "CarrierCode": "HU",
