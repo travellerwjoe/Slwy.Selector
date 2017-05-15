@@ -1,7 +1,7 @@
 /**
- * @preserve jquery.Slwy.Calendar.js
+ * @preserve jquery.Slwy.Selector.js
  * @author Joe.Wu
- * @version v0.10.6
+ * @version v0.10.7
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -134,7 +134,7 @@
         this.$srcElement = $srcElement
         this.data = this.options.data
         this.hasSetPosition = false
-
+        this.isShow = false
         // this.init()
     }
 
@@ -235,6 +235,7 @@
     }
 
     Selector.prototype.show = function () {
+        if (this.isShow) return
         this.$selector.show()
         if (!this.hasSetPosition) {
             this.setPosition()
@@ -242,11 +243,14 @@
         }
         this.$opener && this.$opener.addClass(prefix + '-selector-opener-expanded').blur()
         this.$search && this.$search.find('input').focus()
+        this.isShow = true
     }
 
     Selector.prototype.hide = function () {
+        if (!this.isShow) return
         this.$selector.hide()
         this.$opener && this.$opener.removeClass(prefix + '-selector-opener-expanded')
+        this.isShow = false
     }
 
     Selector.prototype.setPosition = function () {
