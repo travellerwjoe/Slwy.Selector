@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="dist/jquery.Slwy.Selector.min.css">
-    <!--<link rel="stylesheet" href="stylesheets/selector.css">-->
+    <!--<link rel="stylesheet" href="dist/jquery.Slwy.Selector.min.css">-->
+    <link rel="stylesheet" href="stylesheets/selector.css">
     <title>Slwy-Selector</title>
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
@@ -69,6 +69,7 @@
 
             //JS
             $('select.demo-select').SlwySelector({
+                showRight: true,//是否显示右侧字段
                 search: true,//是否显示搜索
                 searchPlaceholder: '搜索航空公司'//搜索栏placeholder
             })
@@ -156,6 +157,7 @@
 
             //JS
             $('select.demo-select-optgroup').SlwySelector({
+                showRight: true,//是否显示右侧字段
                 search: true,//是否显示搜索
                 searchPlaceholder: '搜索航空公司'//搜索栏placeholder
             })
@@ -247,7 +249,7 @@
         <pre>
             <code>
             //html
-            &lt;select name="select" class="demo-select"&gt;
+            &lt;select name="select" class="demo-other-width"&gt;
                 &lt;option value="CA" data-right="CA" disabled&gt;中国国际航空&lt;/option&gt;
                 &lt;option value="MU" data-right="MU"&gt;东方航空&lt;/option&gt;
                 &lt;option value="CZ"&gt;南方航空&lt;/option&gt;
@@ -255,7 +257,8 @@
             &lt;/select&gt;
 
             //JS
-            $('select.demo-select').SlwySelector({
+            $('select.demo-other-width').SlwySelector({
+                showRight: true,//是否显示右侧字段
                 width: 300,
                 search: true,//是否显示搜索
                 searchPlaceholder: '搜索航空公司'//搜索栏placeholder
@@ -272,13 +275,31 @@
             &lt;/select&gt;
 
             //JS
-            $('select.demo-select').SlwySelector({
+            $('select.demo-other-viewCount').SlwySelector({
                 data: data,//自定义数据
                 showField: 'CarrierName',//需要展示的自定义数据字段名
                 showRight: true,//是否显示右侧字段
                 showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
                 viewCount: 15,//每页显示数量
                 search: true,//是否显示搜索
+                searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+            })
+            </code>
+        </pre>
+        <h3>----自定义搜索字段</h3>
+        <select name="select" class="demo-other-searchField">
+        </select>
+        <pre>
+            <code>
+            //html
+            &lt;select name="select" class="demo-other-searchField"&gt;
+            &lt;/select&gt;
+             //JS
+            $('select.other-searchField').SlwySelector({
+                data: data,//自定义数据
+                showField: 'CarrierName',//需要展示的自定义数据字段名
+                search: true,//是否显示搜索
+                searchField: ['CarrierCode'],
                 searchPlaceholder: '搜索航空公司'//搜索栏placeholder
             })
             </code>
@@ -308,6 +329,7 @@
         })*/
 
         $('select.demo-select').SlwySelector({
+            showRight: true,//是否显示右侧字段
             search: true,//是否显示搜索
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
         })
@@ -322,6 +344,7 @@
         })
 
         $('select.demo-select-optgroup').SlwySelector({
+            showRight: true,//是否显示右侧字段
             search: true,//是否显示搜索
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
         })
@@ -337,6 +360,7 @@
         })
 
         $('select.demo-other-width').SlwySelector({
+            showRight: true,//是否显示右侧字段
             width: 300,
             search: true,//是否显示搜索
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
@@ -351,6 +375,14 @@
             showRightFiled: 'CarrierCode',//需要展示的右侧自定义数据字段名
             viewCount: 15,
             search: true,//是否显示搜索
+            searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        })
+
+        $('select.demo-other-searchField').SlwySelector({
+            data: data,//自定义数据
+            showField: 'CarrierName',//需要展示的自定义数据字段名
+            search: true,//是否显示搜索
+            searchField: ['CarrierCode'],
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
         })
     </script>

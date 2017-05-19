@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Selector.js
  * @author Joe.Wu
- * @version v0.10.7
+ * @version v0.11.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -31,7 +31,8 @@
             blurEvent: 'blur' + namespace,
             clickEvent: 'click' + namespace,
             mouseenterEvent: 'mouseenter' + namespace,
-            selectedEvent: 'selected' + namespace
+            selectedEvent: 'selected' + namespace,
+            propertyChangeEvent: 'propertychange' + namespace
         },
         className = {
             hoverClassName: prefix + '-selector-hover',
@@ -121,11 +122,12 @@
             title: '支持中文搜索',
             titleBar: false,
             data: [],
-            showField: '',
-            showRight: false,
-            showRightFiled: '',
-            search: false,
+            showField: '',//需要展示的自定义数据字段名
+            showRight: false,//是否显示右侧字段
+            showRightFiled: '',//需要展示的右侧自定义数据字段名
+            search: false,//是否显示搜索
             searchPlaceholder: '搜索',
+            searchField: [],//可被用于搜索的字段
             viewCount: 10,
             width: null
         }
@@ -354,7 +356,7 @@
                         html += item
                     }
                 } else if (this.selector.optionsData.length) {
-                    if (item.rightText) {
+                    if (item.rightText && showRight) {
                         html += '<span class="' + leftClsName + '">' + item.text + '</span>'
                         html += '<span class="' + rightClsName + '">' + item.rightText + '</span>'
                     } else {
@@ -419,17 +421,19 @@
         var self = this
         this.$search.find('input').on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
             var keyCode = e.keyCode || e.which
-            for (var i = 0; i < specialKeyCode.length; i++) {
-                var item = specialKeyCode[i].toString(),
-                    arr
-                if (item.indexOf('-') >= 0) {
-                    arr = item.split('-')
-                    if (keyCode >= arr[0] || keyCode <= arr[1]) {
-                        return
-                    }
-                } else {
-                    if (keyCode == item) {
-                        return
+            if (keyCode) {
+                for (var i = 0; i < specialKeyCode.length; i++) {
+                    var item = specialKeyCode[i].toString(),
+                        arr
+                    if (item.indexOf('-') >= 0) {
+                        arr = item.split('-')
+                        if (keyCode >= arr[0] && keyCode <= arr[1]) {
+                            return
+                        }
+                    } else {
+                        if (keyCode == item) {
+                            return
+                        }
                     }
                 }
             }
@@ -442,17 +446,32 @@
         var field = this.data.length ? this.options.showField : 'text',
             rightField = this.options.showRight ? this.data.length ? this.options.showRightFiled : 'rightText' : null,
             data = this.data.length ? this.data : this.optionsData,
+            searchField = this.options.searchField,
             filterData = [],
-            reg = new RegExp('^' + keyword.toUpperCase() + '.*'),
+            // reg = new RegExp('^' + keyword.toString().toUpperCase() + '.*'),//半模糊左匹配
+            reg = new RegExp('(' + keyword.toString().toUpperCase() + ')'),//全模糊
             each = function (data, item, index, subindex) {
                 item.index = index
                 if (typeof subindex === 'number') item.subindex = subindex
-                if (reg.test(item[field].toUpperCase())) {
-                    data.push(item)
+                var newItem = $.extend(true, {}, item)
+                if (reg.test(newItem[field].toString().toUpperCase())) {
+                    newItem[field] = replaceKeyword(newItem[field])
+                    data.push(newItem)
                 }
-                if (rightField && item[rightField] && reg.test(item[rightField].toUpperCase())) {
-                    data.push(item)
+                if (rightField && newItem[rightField] && reg.test(newItem[rightField].toString().toUpperCase())) {
+                    newItem[rightField] = replaceKeyword(newItem[rightField])
+                    data.push(newItem)
                 }
+                if (!!searchField.length) {
+                    for (var i = 0; i < searchField.length; i++) {
+                        if (newItem[searchField[i]] && reg.test(newItem[searchField[i]].toString().toUpperCase())) {
+                            data.push(newItem)
+                        }
+                    }
+                }
+            },
+            replaceKeyword = function (keyword) {
+                return keyword.replace(reg, '<b class="' + prefix + '-selector-keyword">$&</b>')
             }
         if (keyword) {
             for (var i = 0; i < data.length; i++) {
@@ -463,8 +482,15 @@
                         optgroup: true,
                         options: []
                     }
-                    if (reg.test(item.label.toUpperCase())) {
+                    if (reg.test(item.label.toString().toUpperCase())) {
+                        obj.label = replaceKeyword(obj.label)
                         obj.options = item.options
+                        // obj.options = item.options.concat()
+                        /* for (var j = 0; j < item.options.length; j++) {
+                             var newItem = $.extend(true, {}, item.options[j])
+                             newItem[field] = replaceKeyword(newItem[field])
+                             obj.options.push(newItem)
+                         }*/
                     } else {
                         for (var m = 0; m < item.options.length; m++) {
                             each.call(this, obj.options, item.options[m], i, m)
