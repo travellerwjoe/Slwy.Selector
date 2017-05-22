@@ -1,6 +1,7 @@
 $prefix:'slwy';
 $mainColor:#003b9f;
-$activeBgColor:#5897fb;
+$activeBgColor:#ddd;
+$hoverBgColor:#5897fb;
 
 .#{$prefix}-selector{
     position: absolute;
@@ -56,14 +57,14 @@ $activeBgColor:#5897fb;
                         position: absolute;
                         right:10px;
                     }
-                    &.#{$prefix}-selector-hover{
-                        background-color: $activeBgColor!important;
-                        color:#fff;
-                    }
                     &.#{$prefix}-selector-active{
-                        background-color:#e5ebf5;
+                        background-color:$activeBgColor;
                         // background-color:#ddd;
                         // color:$mainColor;
+                    }
+                    &.#{$prefix}-selector-hover{
+                        background-color: $hoverBgColor;
+                        color:#fff;
                     }
                 }
                 &.#{$prefix}-selector-optgroup{
