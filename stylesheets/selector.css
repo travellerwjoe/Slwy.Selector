@@ -12,15 +12,15 @@
   text-align: center;
   line-height: 35px;
   font-size: 15px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
 }
 /* line 19, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown {
   background-color: #fff;
   border: 1px solid #aaa;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 /* line 25, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-search {
@@ -69,7 +69,7 @@
 }
 /* line 62, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-option.slwy-selector-active {
-  background-color: #ddd;
+  background-color: #e5ebf5;
 }
 /* line 68, ../sass/selector.scss */
 .slwy-selector .slwy-selector-dropdown .slwy-selector-options-list li.slwy-selector-optgroup {

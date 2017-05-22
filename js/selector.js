@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Selector.js
  * @author Joe.Wu
- * @version v0.11.0
+ * @version v0.11.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -259,9 +259,10 @@
         var $relativeEl = this.$opener || this.$srcElement,
             offset = $relativeEl.offset(),
             height = $relativeEl.outerHeight(),
-            width = typeof this.options.width === 'number' ? this.options.width : $relativeEl.outerWidth()
+            width = typeof this.options.width === 'number' ? this.options.width : $relativeEl.outerWidth(),
+            top = this.options.titleBar ? offset.top + height + 2 : offset.top + height - 2
         this.$selector.css({
-            top: offset.top + height - 2,
+            top: top,
             left: offset.left,
             width: width
         })
