@@ -4,6 +4,7 @@ $activeBgColor:#5897fb;
 
 .#{$prefix}-selector{
     position: absolute;
+    z-index: 99999;
     display: none;
     .#{$prefix}-selector-title{
         height: 35px;
