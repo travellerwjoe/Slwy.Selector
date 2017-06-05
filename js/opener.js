@@ -39,11 +39,12 @@ Opener.prototype.getSelectedFormData = function () {
     var selected = null,
         i = 0;
     if (!!this.data.length) {
-        (function (data, index) {
+        (function each(data, index) {
             do {
                 if (data[index].optgroup) {
                     var m = 0
-                    arguments.callee.call(this, data[index].options, m)
+                    // arguments.callee.call(this, data[index].options, m)
+                    each.call(this, data[index].options, m)
                 } else {
                     selected = data[index]
                 }
