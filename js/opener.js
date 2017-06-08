@@ -30,7 +30,8 @@ Opener.prototype.render = function (decorated) {
     var showField = this.options.showField,
         selectedText = !!this.data.length ? this.selected[showField] : this.selected.text,
         selectedValue = this.selected
-
+    
+    this.options.width && this.$opener.width(this.options.width)
     this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
 }
 
