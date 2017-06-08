@@ -1,4 +1,5 @@
 const path = require('path')
+const process = require('process')
 const webpack = require('webpack')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const pkg = require('./package')
@@ -62,11 +63,17 @@ module.exports = {
     amd: {
         jQuery: true
     },
-    plugins: [
-        new webpack.BannerPlugin({
-            banner: banner,
-            raw: true
-        }),
-        new UglifyJSPlugin()
-    ]
+    plugins: (function () {
+        var plugins = [
+            new webpack.BannerPlugin({
+                banner: banner,
+                raw: true
+            })
+        ]
+        if (process.env.Node_ENV === 'production') {
+            plugins.push(new UglifyJSPlugin())
+        }
+        return plugins
+    })()
+
 }

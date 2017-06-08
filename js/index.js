@@ -78,14 +78,17 @@ function Decorate(SuperClass, DecoratorClass) {
 }
 
 $.fn.SlwySelector = function (options) {
-    var S = Selector
-    if (options.search) {
-        S = Decorate(S, Search)
+    try {
+        var S = Selector
+        if (options.search) {
+            S = Decorate(S, Search)
+        }
+        if ($(this).is('select')) {
+            S = Decorate(S, Opener)
+        }
+        new S(options, $(this)).init()
+    } catch (e) {
+        console.error(e)
     }
-    if ($(this).is('select')) {
-        S = Decorate(S, Opener)
-    }
-    new S(options, $(this)).init()
-
     return $(this);
 }

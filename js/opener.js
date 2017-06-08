@@ -36,7 +36,7 @@ Opener.prototype.render = function (decorated) {
 
 //从自定义数据中获取第一个非disabled作为selected数据
 Opener.prototype.getSelectedFormData = function () {
-    var selected = null,
+    var selected = {},
         i = 0;
     if (!!this.data.length) {
         (function each(data, index) {
@@ -96,6 +96,5 @@ Opener.prototype.getSelectOptionData = function () {
             eachOptions(data, item, index)
         })
     }
-
     return data;
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "minify": "uglifyjs js/selector.js -c -m -o dist/jquery.Slwy.Selector.min.js --comments && uglifycss stylesheets/selector.css > dist/jquery.Slwy.Selector.min.css",
-    "watch": "browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\""
+    "watch": "browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\"",
+    "build":"set NODE_ENV=production&&webpack --progress"
   },
   "author": "Joe.Wu",
   "license": "MIT",
