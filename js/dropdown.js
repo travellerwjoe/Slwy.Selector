@@ -25,6 +25,7 @@ Dropdown.prototype.bind = function () {
         self.hoverIndex = $(this).index()
     }).on(events.clickEvent, 'li.' + className.optionClassName, function (e) {
         self.selector.triggerSelected($(this))
+        self.selector.isSelect && self.selector.$srcElement.trigger('change')
     })
 }
 

@@ -18,6 +18,7 @@ export default function Selector(options, $srcElement) {
     this.options = $.extend(true, defaults, options)
     this.$selector = $(VARS.tpl.selector)
     this.$srcElement = $srcElement
+    this.isSelect = this.$srcElement.is('select')
     this.data = this.options.data
     this.hasSetPosition = false
     this.isShow = false
