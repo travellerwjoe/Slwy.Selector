@@ -84,6 +84,9 @@ $hoverBgColor:#5897fb;
                 }
             }
         }
+        &.#{$prefix}-selector-noborder{
+            border:0;
+        }
     }
     &.#{$prefix}-selector-opener{
         box-sizing: border-box;
@@ -102,6 +105,13 @@ $hoverBgColor:#5897fb;
         // padding-right:20px;
         font-size:14px;
         padding:5px 20px 5px 8px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        &:focus { 
+            border-color: #66afe9;
+            outline: 0; 
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6); 
+        }
         &:after{
             content:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAnElEQVQoU2NkIBEwkqiegXwNnZ2dBYyMjP3YbPz//39heXn5BJAc3IZVq1YxP3jw4CQDA4MxmqazCgoK5mFhYX9RNIA4PT09xv/+/QNpYoZq+svExGReUlJyFmYIhh+6urpAVudDFUwsKysrQLYRQ8PUqVN5vnz5ch2kiIeHRzM7O/sLXg0gyc7OzgAQXV5evgE9EMgPVmIjkGQbAM3XKw1uNWlcAAAAAElFTkSuQmCC');
             position:absolute;
@@ -110,6 +120,38 @@ $hoverBgColor:#5897fb;
         &.#{$prefix}-selector-opener-expanded{
             &:after{
                 content:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABiSURBVChTYxgioLOzMwCEoVz8YMqUKTxAxY9BGMSGCuMGXV1dE4D4PxRPgApjBz09PcZAk//ANIDYIDGoNCpYtWoVM1DBGSTTYZrOgOSgyhCgo6OjAF0xDIPkoMoGH2BgAAAVKUsRXG9xaAAAAABJRU5ErkJggg==')
+            }
+        }
+        
+        &.#{$prefix}-selector-multiple{
+            height: 35px;
+            cursor: text;
+            &:after{
+                content:none;
+            }
+            .#{$prefix}-selector-multiple-list{
+                margin:0;
+                padding: 0;
+                list-style: none;
+                display: inline-block;
+                li{
+                    cursor: pointer;
+                    display: inline-block;
+                    margin:0 5px;
+                    background-color:#5897fb;
+                    color:#fff;
+                    padding: 2px 5px;
+                    border-radius: 5px;
+                    &:after{
+                        content:'X';
+                        margin-left:5px;
+                    }
+                }
+            }
+            .#{$prefix}-selector-multiple-input{
+                border:0;
+                outline: none;
+                font-size: 15px;
             }
         }
     }

@@ -9,7 +9,7 @@ export default function Dropdown(selector) {
 }
 
 Dropdown.prototype.init = function () {
-    var data = this.selector.data.length ? this.selector.data : this.selector.optionsData
+    var data = this.selector.data.length ? this.selector.data : this.selector.optionsData || []
     this.bind()
     this.render(data)
 }
@@ -43,15 +43,28 @@ Dropdown.prototype.render = function (data) {
                 index = item.index || index,
                 subindex = item.subindex || subindex,
                 html
+
+            setID(item)
+
             if (item.disabled || item.Disabled) {
                 clsName += ' ' + className.disabledClassName
             }
-            // if (this.selector.selected && showField && item[showField] == this.selector.selected[showField]) {
-            if (item == this.selector.selected) {
 
-                clsName += ' ' + className.activeClassName
+            if (this.selector.selected) {
+                //selected为数组，multiple模式下
+                if ($.isArray(this.selector.selected)) {
+                    for (let i = 0; i < this.selector.selected.length; i++) {
+                        const selected = this.selector.selected[i]
+                        if (selected._id === item._id) {
+                            clsName += ' ' + className.activeClassName
+                            break
+                        }
+                    }
+                } else if (typeof this.selector.selected === 'object' && item._id == this.selector.selected._id) {
+                    clsName += ' ' + className.activeClassName
+                }
             }
-            html = '<li class="' + clsName + '" data-index="' + index + '"' + (typeof subindex === 'number' ? ' data-subindex="' + subindex + '"' : '') + '>'
+            html = '<li class="' + clsName + '" data-index="' + index + '"' + (typeof subindex === 'number' ? ' data-subindex="' + subindex + '"' : '') + ' id="' + item._id + '">'
             if (this.selector.data.length) {
                 if (typeof item === 'object') {
                     if (!showRight) {
@@ -73,11 +86,26 @@ Dropdown.prototype.render = function (data) {
             }
             html += '</li>'
             return html
+        },
+        setID = function (item) {
+            if (item._id) return
+            function random(min, max) {
+                var range = max - min,
+                    rand = Math.random(),
+                    num = min + Math.round(rand * range)
+                return num
+            }
+            var id = String.fromCharCode(random(65, 90)) + String.fromCharCode(random(97, 122)) + random(100000, 999999)
+            item._id = `selector_${id}`
         }
-
     if (!len) {
-        html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
+        if (this.selector.options.searchShowEmpty) {
+            html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
+        } else {
+            this.$dropdown.addClass(className.noborder)
+        }
     } else {
+        this.$dropdown.has(className.noborder) && this.$dropdown.removeClass(className.noborder)
         for (var i = 0; i < len; i++) {
             var leftClsName = VARS.prefix + '-selector-option-left',
                 rightClsName = VARS.prefix + '-selector-option-right',

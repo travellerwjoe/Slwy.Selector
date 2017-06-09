@@ -5,7 +5,10 @@ var prefix = 'slwy',
         title: '<div class="' + prefix + '-selector-title"></div>',
         optionsList: '<ul class="' + prefix + '-selector-options-list"></ul>',
         search: '<div class="' + prefix + '-selector-search"><input type="search" class="' + prefix + '-selector-search-input" autocomplete="off"></div>',
-        opener: '<div class="' + prefix + '-selector ' + prefix + '-selector-opener" tabindex="0"></div>'
+        opener: '<div class="' + prefix + '-selector ' + prefix + '-selector-opener" tabindex="0"></div>',
+        multiple: `<div class="${prefix}-selector ${prefix}-selector-opener ${prefix}-selector-multiple" tabindex="0"></div>`,
+        multipleList: `<ul class="${prefix}-selector-multiple-list"></ul>`,
+        multipleInput: `<input class="${prefix}-selector-multiple-input" type="text">`
     },
     namespace = '.' + prefix + '.selector',
     events = {
@@ -26,7 +29,10 @@ var prefix = 'slwy',
         disabledClassName: prefix + '-selector-option-disabled',
         optionClassName: prefix + '-selector-option',
         optgroupClassName: prefix + '-selector-optgroup',
-        hasOptgroupClassName: prefix + '-selector-has-optgroup'
+        hasOptgroupClassName: prefix + '-selector-has-optgroup',
+        expandClassName: prefix + '-selector-opener-expanded',
+        multipleClassName: prefix + '-selector-multiple',
+        noborder: prefix + '-selector-noborder'
     },
     specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
 export default {

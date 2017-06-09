@@ -1,6 +1,6 @@
 {
   "name": "jquery.slwy.selector",
-  "version": "0.12.2",
+  "version": "0.13.0-alpha.1",
   "description": "Slwy简易选择列表插件",
   "main": "index.js",
   "scripts": {

@@ -2,6 +2,7 @@ import Selector from './selector'
 import Dropdown from './dropdown'
 import Opener from './opener'
 import Search from './search'
+import Multiple from './multiple'
 import '../sass/selector.scss'
 
 function getMethods(theClass) {
@@ -79,12 +80,17 @@ function Decorate(SuperClass, DecoratorClass) {
 
 $.fn.SlwySelector = function (options) {
     try {
-        var S = Selector
-        if (options.search) {
+        var S = Selector,
+            isSelect = $(this).is('select'),
+            isMultiple = (this).attr('multiple')
+        if (options.search || isMultiple) {
             S = Decorate(S, Search)
         }
-        if ($(this).is('select')) {
+        if (isSelect) {
             S = Decorate(S, Opener)
+            if (isMultiple) {
+                S = Decorate(S, Multiple)
+            }
         }
         new S(options, $(this)).init()
     } catch (e) {

@@ -1,6 +1,7 @@
 import VARS from './vars'
 export default function Search(decorated) {
     this.$search = $(VARS.tpl.search)
+    this.$searchInput = this.$search.find('input')
     decorated.apply(this, Array.prototype.slice.call(arguments, 1))
 }
 
@@ -10,8 +11,9 @@ Search.prototype.init = function (decorated) {
 
 Search.prototype.render = function (decorated) {
     decorated.call(this)
-    this.dropdown.$dropdown.prepend(this.$search)
-    this.$search.find('input').attr('placeholder', this.options.searchPlaceholder)
+    //multiple下不添加搜索框
+    !this.isMultiple && this.dropdown.$dropdown.prepend(this.$search)
+    this.$searchInput.attr('placeholder', this.options.searchPlaceholder)
 }
 
 Search.prototype.bind = function (decorated) {
@@ -19,8 +21,9 @@ Search.prototype.bind = function (decorated) {
     var self = this,
         events = VARS.events,
         specialKeyCode = VARS.specialKeyCode
-    this.$search.find('input').on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
-        var keyCode = e.keyCode || e.which
+    this.$searchInput.on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
+        var keyCode = e.keyCode || e.which,
+            keyword = typeof e.keyword !== 'undefined' ? e.keyword : $(this).val()
         if (keyCode) {
             for (var i = 0; i < specialKeyCode.length; i++) {
                 var item = specialKeyCode[i].toString(),
@@ -37,7 +40,7 @@ Search.prototype.bind = function (decorated) {
                 }
             }
         }
-        self.filter($(this).val())
+        self.filter(keyword)
     })
 }
 

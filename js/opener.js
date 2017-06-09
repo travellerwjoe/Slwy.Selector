@@ -1,14 +1,14 @@
 import VARS from './vars'
 export default function Opener(decorated) {
+    decorated.apply(this, Array.prototype.slice.call(arguments, 1))
     this.$opener = $(VARS.tpl.opener)
     this.optionsData = []
-    decorated.apply(this, Array.prototype.slice.call(arguments, 1))
+    this.selected = this.getSelectedFormData()
+    this.optionsData = this.getSelectOptionData()
 }
 
 Opener.prototype.init = function (decorated) {
-    this.selected = this.getSelectedFormData()
-    this.optionsData = this.getSelectOptionData()
-    decorated.call(this)
+    decorated.call(this)    
 }
 
 Opener.prototype.bind = function (decorated) {
@@ -30,7 +30,7 @@ Opener.prototype.render = function (decorated) {
     var showField = this.options.showField,
         selectedText = !!this.data.length ? this.selected[showField] : this.selected.text,
         selectedValue = this.selected
-    
+    // debugger
     this.options.width && this.$opener.width(this.options.width)
     this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
 }

@@ -12,13 +12,20 @@ export default function Selector(options, $srcElement) {
         search: false,//是否显示搜索
         searchPlaceholder: '搜索',
         searchField: [],//可被用于搜索的字段
+        searchShowEmpty: true,//搜索时显示无结果提示
         viewCount: 10,
-        width: null
+        width: null,
+        multipleInputSeparator: ';', //multiple下输入时分隔符
+        multipleInputCustom: false,//multiple下允许自定义输入
+        select: null,//回调函数，刚选择还未渲染已选择内容时触发，可返回一个字符串自定义已选择的option的显示内容
     }
     this.options = $.extend(true, defaults, options)
     this.$selector = $(VARS.tpl.selector)
     this.$srcElement = $srcElement
+    this.isInput = this.$srcElement.is(':text')
     this.isSelect = this.$srcElement.is('select')
+    this.isMultiple = this.isSelect && !!this.$srcElement.attr('multiple')
+    this.selected = null
     this.data = this.options.data
     this.hasSetPosition = false
     this.isShow = false
@@ -43,9 +50,9 @@ Selector.prototype.bind = function () {
 
         var keyCode = e.keyCode || e.which,
             className = VARS.className,
-            hoverIndex = self.dropdown.hoverIndex,
             hoverClassName = className.hoverClassName,
-            $hoverItem = self.dropdown.$optionsList.find('.' + hoverClassName),
+            hoverIndex = self.dropdown.hoverIndex,
+            $hoverItem = hoverIndex >= 0 ? self.dropdown.$optionsList.find('li').eq(hoverIndex) : self.dropdown.$optionsList.find('.' + hoverClassName),
             listHeight = self.dropdown.$optionsList.outerHeight(),
             liHeight = self.dropdown.$optionsList.find('li').outerHeight(),
             listScrollTop = self.dropdown.$optionsList.scrollTop(),
@@ -99,18 +106,30 @@ Selector.prototype.bind = function () {
     this.$srcElement.on(events.clickEvent, function (e) {
         self.show()
     }).on(events.selectedEvent, function (e) {
-        if ($(this).is('input')) {
-            $(this).val(e.text)
-        } else if ($(this).is('select')) {
-            $(this).val(e.value.value)
-            self.$opener.text(e.text)
+        var $el = $(this)
+        if (self.isInput) {
+            $el.val(e.text)
+        } else if (self.isSelect) {
+            if (!self.isMultiple) {
+                $el.val(e.value.value)
+                self.$opener.html(e.text)
+            } else {
+                var values = []
+                for (let i = 0; i < self.selected.length; i++) {
+                    values.push(self.selected[i].value)
+                }
+                values.length && $el.val(values)
+            }
         }
         self.hide()
     })
     $(document).on(events.clickEvent, function (e) {
-        if ($(e.target).is(self.$opener || self.$srcElement) || self.$selector.find($(e.target)).length) {
+        var $opener = $(e.target).parents().filter(self.$opener),
+            $selector = $(e.target).parents().filter(self.$selector)
+        if ($(e.target).is(self.$opener || self.$srcElement) || $opener.is(self.$opener) || $selector.is(self.$selector)) {
             return
         }
+
         self.hide()
     })
 }
@@ -130,15 +149,15 @@ Selector.prototype.show = function () {
         this.setPosition()
         this.dropdown.setListHeigth()
     }
-    this.$opener && this.$opener.addClass(VARS.prefix + '-selector-opener-expanded').blur()
-    this.$search && this.$search.find('input').focus()
+    this.$opener && this.$opener.addClass(VARS.className.expandClassName).blur()
+    this.$search && this.$searchInput.focus()
     this.isShow = true
 }
 
 Selector.prototype.hide = function () {
     if (!this.isShow) return
     this.$selector.hide()
-    this.$opener && this.$opener.removeClass(VARS.prefix + '-selector-opener-expanded')
+    this.$opener && this.$opener.removeClass(VARS.className.expandClassName)
     this.isShow = false
 }
 
@@ -161,11 +180,17 @@ Selector.prototype.triggerSelected = function ($targetEl) {
     if ($targetEl.hasClass(className.disabledClassName)) return
     var index = $targetEl.data('index'),
         subindex = $targetEl.data('subindex'),
-        data = this.data.length ? this.data[index] : this.optionsData[index],
+        data = $.extend(true, {}, this.data.length ? this.data[index] : this.optionsData[index]),
         field = this.data.length ? this.options.showField : 'text',
         text
 
     if (!data) return
+
+    if (typeof this.options.select === 'function') {
+        var str = this.options.select(data)
+        data[field] = str
+    }
+
     if (typeof data === 'object') {
         if (data.optgroup && data.options && typeof subindex === 'number') {
             data = data.options[subindex]
@@ -175,13 +200,28 @@ Selector.prototype.triggerSelected = function ($targetEl) {
         text = data
     }
 
+    $targetEl.addClass(className.activeClassName)
+
+    //是多选时的操作
+    if (this.isMultiple) {
+        var index = this.inSelected(data)
+        if (index >= 0) {
+            this.selected.splice(index, 1)
+            $targetEl.removeClass(className.activeClassName)
+        } else {
+            this.selected.push(data)
+        }
+        this.renderMultipleList()
+    } else {
+        this.selected = data
+        $targetEl.siblings().removeClass(className.activeClassName)
+    }
+
     this.$srcElement.trigger({
         type: 'selected',
         value: data,
         text: text
     })
-
-    $targetEl.addClass(className.activeClassName).siblings().removeClass(className.activeClassName)
 }
 
 
