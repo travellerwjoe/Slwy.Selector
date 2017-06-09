@@ -32,8 +32,8 @@ Dropdown.prototype.bind = function () {
 Dropdown.prototype.render = function (data) {
     this.$optionsList.html('')
     var html = '',
-        showField = this.selector.options.showField,
-        showRightFiled = this.selector.options.showRightFiled,
+        showField =  !this.selector.hasOptionsData ? this.selector.options.showField : 'text',
+        showRightFiled =  this.selector.options.showRight ? !this.selector.hasOptionsData ? this.selector.options.showRightFiled : 'rightText' : null,
         showRight = this.selector.options.showRight,
         len = data.length,
         hasOptgroup = false,
@@ -44,7 +44,7 @@ Dropdown.prototype.render = function (data) {
                 subindex = item.subindex || subindex,
                 html
 
-            setID(item)
+            this.setItemID(item)
 
             if (item.disabled || item.Disabled) {
                 clsName += ' ' + className.disabledClassName
@@ -86,18 +86,8 @@ Dropdown.prototype.render = function (data) {
             }
             html += '</li>'
             return html
-        },
-        setID = function (item) {
-            if (item._id) return
-            function random(min, max) {
-                var range = max - min,
-                    rand = Math.random(),
-                    num = min + Math.round(rand * range)
-                return num
-            }
-            var id = String.fromCharCode(random(65, 90)) + String.fromCharCode(random(97, 122)) + random(100000, 999999)
-            item._id = `selector_${id}`
         }
+
     if (!len) {
         if (this.selector.options.searchShowEmpty) {
             html += '<li class="' + className.disabledClassName + '">抱歉，没有找到结果！</li>'
@@ -131,8 +121,22 @@ Dropdown.prototype.render = function (data) {
 
 Dropdown.prototype.setListHeigth = function () {
     var liHeight = this.$optionsList.find('li').outerHeight(),
-        height = this.$optionsList.height() > liHeight * this.selector.options.viewCount ? liHeight * this.selector.options.viewCount : this.$optionsList.height()
+        viewCount = parseInt(this.selector.options.viewCount),
+        height = this.$optionsList.height() > liHeight * viewCount ? liHeight * this.selector.options.viewCount : this.$optionsList.height()
     this.$optionsList.css({
         maxHeight: height
     })
+}
+
+//为每个item设置一个随机id
+Dropdown.prototype.setItemID = function (item) {
+    if (item._id) return
+    function random(min, max) {
+        var range = max - min,
+            rand = Math.random(),
+            num = min + Math.round(rand * range)
+        return num
+    }
+    var id = String.fromCharCode(random(65, 90)) + String.fromCharCode(random(97, 122)) + random(100000, 999999)
+    item._id = `selector_${id}`
 }

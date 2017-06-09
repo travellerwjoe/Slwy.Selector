@@ -2,13 +2,17 @@ import VARS from './vars'
 export default function Opener(decorated) {
     decorated.apply(this, Array.prototype.slice.call(arguments, 1))
     this.$opener = $(VARS.tpl.opener)
-    this.optionsData = []
+    this.hasOptionsData = false
     this.selected = this.getSelectedFormData()
-    this.optionsData = this.getSelectOptionData()
+    if (!this.data.length) {
+        var optionsData = this.getSelectOptionData()
+        this.data = optionsData
+        this.hasOptionsData = true
+    }
 }
 
 Opener.prototype.init = function (decorated) {
-    decorated.call(this)    
+    decorated.call(this)
 }
 
 Opener.prototype.bind = function (decorated) {
@@ -27,11 +31,12 @@ Opener.prototype.bind = function (decorated) {
 
 Opener.prototype.render = function (decorated) {
     decorated.call(this)
-    var showField = this.options.showField,
-        selectedText = !!this.data.length ? this.selected[showField] : this.selected.text,
+    var showField = !this.hasOptionsData ? this.options.showField : 'text',
+        selectedText = this.selected[showField],
         selectedValue = this.selected
     // debugger
     this.options.width && this.$opener.width(this.options.width)
+    this.options.skin && this.$opener.addClass(this.options.skin)
     this.$srcElement.after(this.$opener.text(selectedText).data('value', selectedValue).show()).hide()
 }
 

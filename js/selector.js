@@ -13,11 +13,12 @@ export default function Selector(options, $srcElement) {
         searchPlaceholder: '搜索',
         searchField: [],//可被用于搜索的字段
         searchShowEmpty: true,//搜索时显示无结果提示
-        viewCount: 10,
+        viewCount: null,
         width: null,
         multipleInputSeparator: ';', //multiple下输入时分隔符
         multipleInputCustom: false,//multiple下允许自定义输入
         select: null,//回调函数，刚选择还未渲染已选择内容时触发，可返回一个字符串自定义已选择的option的显示内容
+        skin: '',//自定义皮肤，传入class
     }
     this.options = $.extend(true, defaults, options)
     this.$selector = $(VARS.tpl.selector)
@@ -118,10 +119,9 @@ Selector.prototype.bind = function () {
                 for (let i = 0; i < self.selected.length; i++) {
                     values.push(self.selected[i].value)
                 }
-                values.length && $el.val(values)
+                $el.val(values)
             }
         }
-        self.hide()
     })
     $(document).on(events.clickEvent, function (e) {
         var $opener = $(e.target).parents().filter(self.$opener),
@@ -140,6 +140,7 @@ Selector.prototype.render = function () {
         this.$selector.prepend($title)
     }
     this.$selector.append(this.dropdown.$dropdown)
+    this.options.skin && this.$selector.addClass(this.options.skin)
 }
 
 Selector.prototype.show = function () {
@@ -147,7 +148,9 @@ Selector.prototype.show = function () {
     this.$selector.show()
     if (!this.hasSetPosition) {
         this.setPosition()
-        this.dropdown.setListHeigth()
+        if (parseInt(this.options.viewCount)) {
+            this.dropdown.setListHeigth()
+        }
     }
     this.$opener && this.$opener.addClass(VARS.className.expandClassName).blur()
     this.$search && this.$searchInput.focus()
@@ -180,8 +183,8 @@ Selector.prototype.triggerSelected = function ($targetEl) {
     if ($targetEl.hasClass(className.disabledClassName)) return
     var index = $targetEl.data('index'),
         subindex = $targetEl.data('subindex'),
-        data = $.extend(true, {}, this.data.length ? this.data[index] : this.optionsData[index]),
-        field = this.data.length ? this.options.showField : 'text',
+        data = $.extend(true, {}, this.data[index]),
+        field = !this.hasOptionsData ? this.options.showField : 'text',
         text
 
     if (!data) return
@@ -222,6 +225,8 @@ Selector.prototype.triggerSelected = function ($targetEl) {
         value: data,
         text: text
     })
+
+    this.hide()
 }
 
 

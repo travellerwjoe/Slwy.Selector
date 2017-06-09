@@ -46,9 +46,9 @@ Search.prototype.bind = function (decorated) {
 
 Search.prototype.filter = function (decorated, keyword) {
     decorated.call(this)
-    var field = this.data.length ? this.options.showField : 'text',
-        rightField = this.options.showRight ? this.data.length ? this.options.showRightFiled : 'rightText' : null,
-        data = this.data.length ? this.data : this.optionsData,
+    var field = !this.hasOptionsData ? this.options.showField : 'text',
+        rightField = this.options.showRight ? !this.hasOptionsData ? this.options.showRightFiled : 'rightText' : null,
+        data = this.data,
         searchField = this.options.searchField,
         filterData = [],
         // reg = new RegExp('^' + keyword.toString().toUpperCase() + '.*'),//半模糊左匹配
