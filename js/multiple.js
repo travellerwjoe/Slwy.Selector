@@ -88,7 +88,9 @@ Multiple.prototype.inputCustom = function (decorated, $el) {
             val = $el.val(),
             str = val.substr(0, val.length - 1),
             lastStr = val.substr(-1),
+            $option,
             item
+        if (!str) return
         if (lastStr === separator) {
             item = {
                 disabled: false,
@@ -99,7 +101,8 @@ Multiple.prototype.inputCustom = function (decorated, $el) {
             this.selected.push(item)
             this.data.push(item)
             $el.val('')
-            this.$srcElement.trigger({
+            $option = $(`<option value="${item.value}">${item.text}</option>`)
+            this.$srcElement.append($option).trigger({
                 type: 'selected',
                 value: item,
                 text: item.text
