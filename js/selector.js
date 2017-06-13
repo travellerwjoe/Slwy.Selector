@@ -8,28 +8,33 @@ export default function Selector(options, $srcElement) {
         data: [],
         showField: '',//需要展示的自定义数据字段名
         showRight: false,//是否显示右侧字段
-        showRightFiled: '',//需要展示的右侧自定义数据字段名
+        showRightField: '',//需要展示的右侧自定义数据字段名
         search: false,//是否显示搜索
         searchPlaceholder: '搜索',
         searchField: [],//可被用于搜索的字段
         searchShowEmpty: true,//搜索时显示无结果提示
-        viewCount: null,
+        viewCount: 10,
         width: null,
         multipleInputSeparator: ';', //multiple下输入时分隔符
         multipleInputCustom: false,//multiple下允许自定义输入
+        multipleInputMaxLength: 30,//multiple下自定义输入时最大输入长度
+        multipleMaxCount: null, // multiple下最大选择数量
+        multipleMaxCountTips: '只能选择{n}个!',
         select: null,//回调函数，刚选择还未渲染已选择内容时触发，可返回一个字符串自定义已选择的option的显示内容
         skin: '',//自定义皮肤，传入class
     }
     this.options = $.extend(true, defaults, options)
     this.$selector = $(VARS.tpl.selector)
     this.$srcElement = $srcElement
+    this.$errorBox = $(VARS.tpl.errorBox)
     this.isInput = this.$srcElement.is(':text')
     this.isSelect = this.$srcElement.is('select')
     this.isMultiple = this.isSelect && !!this.$srcElement.attr('multiple')
     this.selected = null
     this.data = this.options.data
-    this.hasSetPosition = false
+    this.first = true
     this.isShow = false
+    this.error = false
     // this.init()
 }
 
@@ -95,7 +100,7 @@ Selector.prototype.bind = function () {
             curScrollTop = hoverIndex * liHeight
             scrollOffset = curScrollTop >= viewEndScrollTop ? (hoverIndex - viewIndex) * liHeight : listScrollTop
         } else if (keyCode === 13) {
-            self.triggerSelected($hoverItem)
+            $hoverItem.length && self.triggerSelected($hoverItem)
         } else {
             return
         }
@@ -112,12 +117,12 @@ Selector.prototype.bind = function () {
             $el.val(e.text)
         } else if (self.isSelect) {
             if (!self.isMultiple) {
-                $el.val(e.value.value)
+                $el.val(e.value._value)
                 self.$opener.html(e.text)
             } else {
                 var values = []
                 for (let i = 0; i < self.selected.length; i++) {
-                    values.push(self.selected[i].value)
+                    values.push(self.selected[i]._value)
                 }
                 $el.val(values)
             }
@@ -140,17 +145,19 @@ Selector.prototype.render = function () {
         this.$selector.prepend($title)
     }
     this.$selector.append(this.dropdown.$dropdown)
+    this.dropdown.$dropdown.append(this.$errorBox.hide())
     this.options.skin && this.$selector.addClass(this.options.skin)
 }
 
 Selector.prototype.show = function () {
     if (this.isShow) return
     this.$selector.show()
-    if (!this.hasSetPosition) {
+    if (this.first) {
         this.setPosition()
-        if (parseInt(this.options.viewCount)) {
-            this.dropdown.setListHeigth()
-        }
+        // if (parseInt(this.options.viewCount)) {
+        this.dropdown.setListHeigth()
+        // }
+        this.first = false
     }
     this.$opener && this.$opener.addClass(VARS.className.expandClassName).blur()
     this.$search && this.$searchInput.focus()
@@ -165,6 +172,7 @@ Selector.prototype.hide = function () {
 }
 
 Selector.prototype.setPosition = function () {
+    // debugger
     var $relativeEl = this.$opener || this.$srcElement,
         offset = $relativeEl.offset(),
         height = $relativeEl.outerHeight(),
@@ -175,22 +183,25 @@ Selector.prototype.setPosition = function () {
         left: offset.left,
         width: width
     })
-    this.hasSetPosition = true
 }
 
 Selector.prototype.triggerSelected = function ($targetEl) {
-    var className = VARS.className
-    if ($targetEl.hasClass(className.disabledClassName)) return
     var index = $targetEl.data('index'),
         subindex = $targetEl.data('subindex'),
         data = $.extend(true, {}, this.data[index]),
-        field = !this.hasOptionsData ? this.options.showField : 'text',
-        text
+        field = !this.hasOptionsData ? this.options.showField : '_text',
+        className = VARS.className,
+        text,
+        selectStatus = true
+
+    if ($targetEl.hasClass(className.disabledClassName)) return
 
     if (!data) return
 
+    data[field + '_bak'] = data[field]
     if (typeof this.options.select === 'function') {
         var str = this.options.select(data)
+
         data[field] = str
     }
 
@@ -210,11 +221,18 @@ Selector.prototype.triggerSelected = function ($targetEl) {
         var index = this.inSelected(data)
         if (index >= 0) {
             this.selected.splice(index, 1)
+            selectStatus = false
             $targetEl.removeClass(className.activeClassName)
+            this.hideError()
         } else {
             this.selected.push(data)
         }
+        
         this.renderMultipleList()
+
+        if (this.checkMultipleMaxCount()) {
+            return
+        }
     } else {
         this.selected = data
         $targetEl.siblings().removeClass(className.activeClassName)
@@ -223,11 +241,29 @@ Selector.prototype.triggerSelected = function ($targetEl) {
     this.$srcElement.trigger({
         type: 'selected',
         value: data,
-        text: text
+        text: text,
+        status: selectStatus,
+        selectedData: this.selected
     })
+
+    this.isSelect && this.$srcElement.trigger('change')
 
     this.hide()
 }
 
 
+Selector.prototype.showError = function (errorTips) {
+    var html = '',
+        className = VARS.className
 
+    this.dropdown.$options.hide()
+    this.dropdown.$dropdown.has(className.noborder) && this.dropdown.$dropdown.removeClass(className.noborder)
+    this.$errorBox.text(errorTips).show()
+    this.error = true
+}
+
+Selector.prototype.hideError = function () {
+    this.$errorBox.hide()
+    this.dropdown && this.dropdown.$options.show()
+    this.error = false
+}

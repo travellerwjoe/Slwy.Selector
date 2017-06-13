@@ -5,7 +5,12 @@ export default function Multiple(decorated, ...args) {
     this.$multiple = $('.multiple')
     this.$multipleList = $(VARS.tpl.multipleList)
     this.$multipleInput = $(VARS.tpl.multipleInput)
-    this.selected = []
+    this.multipleHeight = this.$opener.outerHeight()
+    this.multipleMaxCountTips = this.options.multipleMaxCountTips.replace(/\{[nN]\}/, this.options.multipleMaxCount)
+    this.multipleInputMaxLength = this.options.multipleInputMaxLength
+    this.multipleInputSeparator = this.options.multipleInputSeparator
+    this.multipleInputCustom = this.options.multipleInputCustom
+    // this.selected = []
 }
 
 Multiple.prototype.init = function (decorated) {
@@ -27,8 +32,16 @@ Multiple.prototype.bind = function (decorated) {
     })
     this.$multipleInput.on(events.focusEvent, function (e) {
         self.show()
-    }).on(events.keyupEvent, function (e) {
-        var keyCode = e.keyCode || e.which
+    }).on(events.keydownEvent, function (e) {
+        var keyCode = e.keyCode || e.which,
+            len = $(this).val().length,
+            maxlength = parseInt(self.multipleInputMaxLength)
+
+        if (maxlength && len >= maxlength && keyCode !== 8 && e.key !== self.multipleInputSeparator) {
+            $(this).val($(this).val().substr(0, 30))
+            e.preventDefault()
+            return
+        }
         //回车键并且有元素被选择
         if (keyCode === 13 && self.dropdown.$dropdown.find('.' + className.hoverClassName).length) {
             $(this).val('')
@@ -36,11 +49,20 @@ Multiple.prototype.bind = function (decorated) {
             return
         }
 
+        //后退删除选择
+        if (keyCode === 8 && !$(this).val()) {
+            e.preventDefault()
+            self.inputBackspace($(this))
+        }
+    }).on(events.keyupEvent, function (e) {
+        var keyCode = e.keyCode || e.which
+
+        //检查最大选择数量
+        if (self.checkMultipleMaxCount()) {
+            return
+        }
+
         self.inputCustom($(this))
-
-        self.inputBackspace($(this), keyCode)
-
-        self.renderMultipleList()
 
         self.$searchInput.trigger({
             type: events.keyupEvent,
@@ -59,16 +81,27 @@ Multiple.prototype.render = function (decorated) {
 
 Multiple.prototype.renderMultipleList = function () {
     var html = '',
-        showField = !this.hasOptionsData ? this.options.showField : 'text'
+        showField = !this.hasOptionsData ? this.options.showField : '_text',
+        className = VARS.className
     for (var i = 0; i < this.selected.length; i++) {
-        var item = this.selected[i]
-        html += `<li data-id="${item._id}" data-index="${i}">${item[showField]}</li>`
+        var item = this.selected[i],
+            showStr = item[showField]
+
+        if (this.multipleInputCustom) {
+            showStr = showStr || item._text
+        }
+
+        html += `<li class="${className.multipleSelected}" data-id="${item._id}" data-index="${i}">${showStr}</li>`
     }
     this.$multipleList.html(html)
+    this.checkMultipleHeight()
+    this.dropdown.resetHover()
 }
 
 Multiple.prototype.renderMultipleInput = function () {
+    var maxlength = parseInt(this.multipleInputMaxLength)
     this.$multipleList.after(this.$multipleInput)
+    // maxlength && this.$multipleInput.attr('maxlength', maxlength + 1)
 }
 
 //this.selected是否包含item,返回索引
@@ -83,41 +116,72 @@ Multiple.prototype.inSelected = function (decorated, item) {
 
 //multiple模式下自定义输入
 Multiple.prototype.inputCustom = function (decorated, $el) {
-    if (this.options.multipleInputCustom && this.options.multipleInputSeparator) {
-        var separator = this.options.multipleInputSeparator,
+    if (this.multipleInputCustom && this.multipleInputSeparator) {
+        var separator = this.multipleInputSeparator,
             val = $el.val(),
             str = val.substr(0, val.length - 1),
             lastStr = val.substr(-1),
             $option,
-            item
+            item,
+            newItem
         if (!str) return
         if (lastStr === separator) {
             item = {
                 disabled: false,
-                text: str,
-                value: str
+                _text: str,
+                _value: str
             }
             this.dropdown.setItemID(item)
-            this.selected.push(item)
+
+            newItem = $.extend(true, {}, item)
+            //_text_bak,_text原始数据的备份
+            newItem._text_bak = newItem._text
+            if (typeof this.options.select === 'function') {
+                var str = this.options.select(newItem)
+                newItem._text = str
+            }
+
+            this.selected.push(newItem)
             this.data.push(item)
             $el.val('')
-            $option = $(`<option value="${item.value}">${item.text}</option>`)
-            this.$srcElement.append($option).trigger({
+            $option = $(`<option value="${item._value}">${item._text}</option>`)
+            this.$srcElement.trigger({
                 type: 'selected',
                 value: item,
-                text: item.text
+                text: item._text,
+                status: true,
+                selectedData: this.selected
             })
+            this.renderMultipleList()
         }
     }
 }
 
 //multiple模式下自定义输入 - 后退
-Multiple.prototype.inputBackspace = function (decorated, $el, keyCode) {
-    if (keyCode === 8 && !$el.val()) {
-        var pos = this.selected.length - 1,
-            lastSelected = this.selected[pos]
-        if (!lastSelected) return
-        this.selected.splice(pos, 1)
-        $el.val(lastSelected.text)
+Multiple.prototype.inputBackspace = function (decorated, $el) {
+    var pos = this.selected.length - 1,
+        lastSelected = this.selected[pos],
+        showField = this.options.showField
+    if (!lastSelected) return
+    this.selected.splice(pos, 1)
+    $el.val(lastSelected[showField + '_bak'] || lastSelected._text_bak)
+    this.hideError()
+    this.renderMultipleList()
+}
+
+Multiple.prototype.checkMultipleHeight = function (decorated) {
+    if (this.$opener.outerHeight() != this.multipleHeight) {
+        this.setPosition()
+        this.multipleHeight = this.$opener.outerHeight()
     }
+}
+
+Multiple.prototype.checkMultipleMaxCount = function (decorated) {
+    if ($.isArray(this.selected) && this.options.multipleMaxCount && this.selected.length >= this.options.multipleMaxCount) {
+        if (!this.error) {
+            this.showError(this.multipleMaxCountTips)
+        }
+        return true
+    }
+    return false
 }

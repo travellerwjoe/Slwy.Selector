@@ -37,7 +37,8 @@ var data = [
         "IsDelete": 0,
         "AddTime": "0001-01-01T00:00:00",
         "AddUser": "",
-        "ModifyUser": ""
+        "ModifyUser": "",
+        "Selected": true
     },
     {
         "KeyID": 0,
@@ -76,7 +77,8 @@ var data = [
         "IsDelete": 0,
         "AddTime": "0001-01-01T00:00:00",
         "AddUser": "",
-        "ModifyUser": ""
+        "ModifyUser": "",
+        "Selected": true
     },
     {
         "KeyID": 0,

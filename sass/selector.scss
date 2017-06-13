@@ -124,8 +124,10 @@ $hoverBgColor:#5897fb;
         }
         
         &.#{$prefix}-selector-multiple{
-            height: 35px;
+            height: auto;
+            min-height: 35px;
             cursor: text;
+            padding:0 20px 0 8px;
             &:after{
                 content:none;
             }
@@ -133,11 +135,14 @@ $hoverBgColor:#5897fb;
                 margin:0;
                 padding: 0;
                 list-style: none;
-                display: inline-block;
+                margin-top:5px;
+                // display: inline-block;
                 li{
+                    float:left;
+                }
+                li.#{$prefix}-selector-multiple-selected{
                     cursor: pointer;
-                    display: inline-block;
-                    margin:0 5px;
+                    margin:0 5px 5px 0;
                     background-color:#5897fb;
                     color:#fff;
                     padding: 2px 5px;
@@ -152,7 +157,16 @@ $hoverBgColor:#5897fb;
                 border:0;
                 outline: none;
                 font-size: 15px;
+                // margin-top:5px;
+                // vertical-align: top;
+                height: 25px;
             }
         }
+    }
+
+    .#{$prefix}-selector-error-box{
+        color: #ccc;
+        padding: 5px 10px;
+        font-size: 14px;
     }
 }

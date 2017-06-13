@@ -2,6 +2,7 @@ import VARS from './vars'
 export default function Dropdown(selector) {
     this.selector = selector
     this.$dropdown = $(VARS.tpl.dropdown)
+    this.$options = $(VARS.tpl.options)
     this.$optionsList = $(VARS.tpl.optionsList)
     this.hoverIndex = -1
     this.activeIndex = -1
@@ -25,15 +26,20 @@ Dropdown.prototype.bind = function () {
         self.hoverIndex = $(this).index()
     }).on(events.clickEvent, 'li.' + className.optionClassName, function (e) {
         self.selector.triggerSelected($(this))
-        self.selector.isSelect && self.selector.$srcElement.trigger('change')
     })
 }
 
 Dropdown.prototype.render = function (data) {
+    this.$options.html(this.$optionsList).appendTo(this.$dropdown)
+    this.renderList(data)
+}
+
+Dropdown.prototype.renderList = function (data) {
+    this.selector.hideError()
     this.$optionsList.html('')
     var html = '',
-        showField =  !this.selector.hasOptionsData ? this.selector.options.showField : 'text',
-        showRightFiled =  this.selector.options.showRight ? !this.selector.hasOptionsData ? this.selector.options.showRightFiled : 'rightText' : null,
+        showField = !this.selector.hasOptionsData ? this.selector.options.showField : '_text',
+        showRightField = this.selector.options.showRight ? !this.selector.hasOptionsData ? this.selector.options.showRightField : '_rightText' : null,
         showRight = this.selector.options.showRight,
         len = data.length,
         hasOptgroup = false,
@@ -42,12 +48,35 @@ Dropdown.prototype.render = function (data) {
             var clsName = className.optionClassName,
                 index = item.index || index,
                 subindex = item.subindex || subindex,
+                showStr = item[showField],
                 html
 
             this.setItemID(item)
 
             if (item.disabled || item.Disabled) {
                 clsName += ' ' + className.disabledClassName
+            }
+
+            //首次遍历提取自定义数据中的selected
+            if (this.selector.first && (item.selected || item.Selected)) {
+                var newItem = $.extend(true, {}, item)
+                if (this.selector.isMultiple) {
+                    newItem[showField + '_bak'] = newItem[showField]
+                    if (typeof this.selector.options.select === 'function') {
+                        var str = this.selector.options.select(newItem)
+                        newItem[showField] = str
+                    }
+                    this.selector.selected.push(newItem)
+
+                } else {
+                    this.selector.selected = newItem
+                }
+
+                this.selector.$srcElement.trigger({
+                    type: 'selected',
+                    value: newItem,
+                    text: newItem[showField]
+                })
             }
 
             if (this.selector.selected) {
@@ -65,23 +94,28 @@ Dropdown.prototype.render = function (data) {
                 }
             }
             html = '<li class="' + clsName + '" data-index="' + index + '"' + (typeof subindex === 'number' ? ' data-subindex="' + subindex + '"' : '') + ' id="' + item._id + '">'
+
+            if (this.selector.options.multipleInputCustom) {
+                showStr = showStr || item._text
+            }
+
             if (this.selector.data.length) {
                 if (typeof item === 'object') {
                     if (!showRight) {
-                        html += item[showField]
+                        html += showStr
                     } else {
-                        html += '<span class="' + leftClsName + '">' + item[showField] + '</span>'
-                        html += '<span class="' + rightClsName + '">' + item[showRightFiled] + '</span>'
+                        html += '<span class="' + leftClsName + '">' + showStr + '</span>'
+                        item[showRightField] ? html += '<span class="' + rightClsName + '">' + item[showRightField] + '</span>' : ''
                     }
                 } else {
                     html += item
                 }
             } else if (this.selector.optionsData.length) {
-                if (item.rightText && showRight) {
-                    html += '<span class="' + leftClsName + '">' + item.text + '</span>'
-                    html += '<span class="' + rightClsName + '">' + item.rightText + '</span>'
+                if (item._rightText && showRight) {
+                    html += '<span class="' + leftClsName + '">' + item._text + '</span>'
+                    html += '<span class="' + rightClsName + '">' + item._rightText + '</span>'
                 } else {
-                    html += item.text
+                    html += item._text
                 }
             }
             html += '</li>'
@@ -116,15 +150,15 @@ Dropdown.prototype.render = function (data) {
     }
     hasOptgroup = /optgroup/.test(html)
     if (hasOptgroup) this.$optionsList.addClass(className.hasOptgroupClassName)
-    this.$optionsList.html(html).appendTo(this.$dropdown)
+    this.$optionsList.html(html)
 }
 
 Dropdown.prototype.setListHeigth = function () {
     var liHeight = this.$optionsList.find('li').outerHeight(),
-        viewCount = parseInt(this.selector.options.viewCount),
-        height = this.$optionsList.height() > liHeight * viewCount ? liHeight * this.selector.options.viewCount : this.$optionsList.height()
+        viewCount = parseInt(this.selector.options.viewCount)
+    // maxHeight = this.$optionsList.height() > liHeight * viewCount ? liHeight * viewCount : this.$optionsList.height()
     this.$optionsList.css({
-        maxHeight: height
+        maxHeight: liHeight * viewCount,
     })
 }
 
@@ -139,4 +173,10 @@ Dropdown.prototype.setItemID = function (item) {
     }
     var id = String.fromCharCode(random(65, 90)) + String.fromCharCode(random(97, 122)) + random(100000, 999999)
     item._id = `selector_${id}`
+}
+
+Dropdown.prototype.resetHover = function () {
+    var className = VARS.className
+    this.hoverIndex = -1
+    this.$optionsList.find('.' + className.hoverClassName).removeClass(className.hoverClassName)
 }

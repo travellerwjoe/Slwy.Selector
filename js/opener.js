@@ -3,7 +3,7 @@ export default function Opener(decorated) {
     decorated.apply(this, Array.prototype.slice.call(arguments, 1))
     this.$opener = $(VARS.tpl.opener)
     this.hasOptionsData = false
-    this.selected = this.getSelectedFormData()
+    this.selected = this.isMultiple ? [] : this.getSelectedFormData()
     if (!this.data.length) {
         var optionsData = this.getSelectOptionData()
         this.data = optionsData
@@ -31,7 +31,7 @@ Opener.prototype.bind = function (decorated) {
 
 Opener.prototype.render = function (decorated) {
     decorated.call(this)
-    var showField = !this.hasOptionsData ? this.options.showField : 'text',
+    var showField = !this.hasOptionsData ? this.options.showField : '_text',
         selectedText = this.selected[showField],
         selectedValue = this.selected
     // debugger
@@ -72,13 +72,22 @@ Opener.prototype.getSelectOptionData = function () {
                 value = $(item).attr('value'),
                 disabled = $(item).is(':disabled'),
                 obj = {
-                    text: text,
-                    rightText: rightText,
-                    value: value,
+                    _text: text,
+                    _rightText: rightText,
+                    _value: value,
                     disabled: disabled
                 }
             if ($(item).is(':selected')) {
-                self.selected = obj
+                if (self.isMultiple) {
+                    obj._text_bak = obj._text
+                    if (typeof this.options.select === 'function') {
+                        var str = this.options.select(obj)
+                        obj._text = str
+                    }
+                    self.selected.push(obj)
+                } else {
+                    self.selected = obj
+                }
             }
             data.push(obj)
         }

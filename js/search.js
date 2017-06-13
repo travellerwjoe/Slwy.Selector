@@ -46,8 +46,8 @@ Search.prototype.bind = function (decorated) {
 
 Search.prototype.filter = function (decorated, keyword) {
     decorated.call(this)
-    var field = !this.hasOptionsData ? this.options.showField : 'text',
-        rightField = this.options.showRight ? !this.hasOptionsData ? this.options.showRightFiled : 'rightText' : null,
+    var field = !this.hasOptionsData ? this.options.showField : '_text',
+        rightField = this.options.showRight ? !this.hasOptionsData ? this.options.showRightField : '_rightText' : null,
         data = this.data,
         searchField = this.options.searchField,
         filterData = [],
@@ -56,9 +56,19 @@ Search.prototype.filter = function (decorated, keyword) {
         each = function (data, item, index, subindex) {
             item.index = index
             if (typeof subindex === 'number') item.subindex = subindex
-            var newItem = $.extend(true, {}, item)
-            if (reg.test(newItem[field].toString().toUpperCase())) {
-                newItem[field] = replaceKeyword(newItem[field])
+            var newItem = $.extend(true, {}, item),
+                showStr = item[field] && item[field].toString().toUpperCase()
+
+            if (this.options.multipleInputCustom) {
+                showStr = showStr || item._text
+            }
+
+            if (reg.test(showStr.toString().toUpperCase())) {
+                if (this.options.multipleInputCustom) {
+                    newItem._text = replaceKeyword(showStr)
+                }
+                newItem[field] = replaceKeyword(showStr)
+
                 data.push(newItem)
             }
             if (rightField && newItem[rightField] && reg.test(newItem[rightField].toString().toUpperCase())) {
@@ -107,5 +117,5 @@ Search.prototype.filter = function (decorated, keyword) {
     } else {
         filterData = data
     }
-    this.dropdown.render(filterData)
+    this.dropdown.renderList(filterData)
 }
