@@ -1,7 +1,9 @@
-import VARS from './vars'
-import Dropdown from './dropdown'
-
-export default function Selector(options, $srcElement) {
+/*import VARS from './vars'
+import Dropdown from './dropdown'*/
+var VARS = require('./vars'),
+    Dropdown = require('./dropdown')
+// export default function Selector(options, $srcElement) {
+function Selector(options, $srcElement) {
     var defaults = {
         title: '支持中文搜索',
         titleBar: false,
@@ -15,7 +17,7 @@ export default function Selector(options, $srcElement) {
         searchShowEmpty: true,//搜索时显示无结果提示
         viewCount: 10,
         width: null,
-        multipleInputSeparator: ';', //multiple下输入时分隔符
+        multipleInputSeparator: [';', '；'], //multiple下输入时分隔符
         multipleInputCustom: false,//multiple下允许自定义输入
         multipleInputMaxLength: 30,//multiple下自定义输入时最大输入长度
         multipleMaxCount: null, // multiple下最大选择数量
@@ -225,14 +227,13 @@ Selector.prototype.triggerSelected = function ($targetEl) {
             $targetEl.removeClass(className.activeClassName)
             this.hideError()
         } else {
+            if (this.checkMultipleMaxCount()) {
+                return
+            }
             this.selected.push(data)
         }
-        
+        this.$multipleInput.val('').keyup()
         this.renderMultipleList()
-
-        if (this.checkMultipleMaxCount()) {
-            return
-        }
     } else {
         this.selected = data
         $targetEl.siblings().removeClass(className.activeClassName)
@@ -267,3 +268,5 @@ Selector.prototype.hideError = function () {
     this.dropdown && this.dropdown.$options.show()
     this.error = false
 }
+
+module.exports = Selector

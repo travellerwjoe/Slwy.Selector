@@ -1,9 +1,15 @@
-import Selector from './selector'
+/*import Selector from './selector'
 import Dropdown from './dropdown'
 import Opener from './opener'
 import Search from './search'
 import Multiple from './multiple'
-import '../sass/selector.scss'
+import '../sass/selector.scss'*/
+var Selector = require('./selector'),
+    Dropdown = require('./dropdown'),
+    Opener = require('./opener'),
+    Search = require('./search'),
+    Multiple = require('./multiple')
+require('../sass/selector.scss')
 
 function getMethods(theClass) {
     var proto = theClass.prototype,

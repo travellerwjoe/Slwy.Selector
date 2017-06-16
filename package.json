@@ -1,13 +1,13 @@
 {
   "name": "jquery.slwy.selector",
-  "version": "0.13.0-alpha.2",
+  "version": "0.13.0-alpha.3",
   "description": "Slwy简易选择列表插件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "minify": "uglifyjs js/selector.js -c -m -o dist/jquery.Slwy.Selector.min.js --comments && uglifycss stylesheets/selector.css > dist/jquery.Slwy.Selector.min.css",
     "watch": "browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\"",
-    "build":"set NODE_ENV=production&&webpack --progress"
+    "build": "set NODE_ENV=production&&webpack --progress"
   },
   "author": "Joe.Wu",
   "license": "MIT",
@@ -29,6 +29,7 @@
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.24.1",
     "css-loader": "^0.28.4",
+    "es3ify-loader": "^0.2.0",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.5",
     "style-loader": "^0.18.2",

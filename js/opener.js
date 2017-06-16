@@ -1,5 +1,7 @@
-import VARS from './vars'
-export default function Opener(decorated) {
+// import VARS from './vars'
+var VARS = require('./vars')
+// export default function Opener(decorated) {
+function Opener(decorated) {
     decorated.apply(this, Array.prototype.slice.call(arguments, 1))
     this.$opener = $(VARS.tpl.opener)
     this.hasOptionsData = false
@@ -113,3 +115,5 @@ Opener.prototype.getSelectOptionData = function () {
     }
     return data;
 }
+
+module.exports = Opener

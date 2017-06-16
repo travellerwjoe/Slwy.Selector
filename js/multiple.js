@@ -1,6 +1,7 @@
-import VARS from './vars'
-import Search from './search'
-export default function Multiple(decorated, ...args) {
+// import VARS from './vars'
+var VARS = require('./vars')
+// export default function Multiple(decorated, ...args) {
+function Multiple(decorated, ...args) {
     decorated.apply(this, args)
     this.$multiple = $('.multiple')
     this.$multipleList = $(VARS.tpl.multipleList)
@@ -42,12 +43,6 @@ Multiple.prototype.bind = function (decorated) {
             e.preventDefault()
             return
         }
-        //回车键并且有元素被选择
-        if (keyCode === 13 && self.dropdown.$dropdown.find('.' + className.hoverClassName).length) {
-            $(this).val('')
-            self.filter($(this).val())
-            return
-        }
 
         //后退删除选择
         if (keyCode === 8 && !$(this).val()) {
@@ -56,6 +51,13 @@ Multiple.prototype.bind = function (decorated) {
         }
     }).on(events.keyupEvent, function (e) {
         var keyCode = e.keyCode || e.which
+
+        //回车键并且有元素被选择
+        if (keyCode === 13 && self.dropdown.$dropdown.find('.' + className.hoverClassName).length) {
+            $(this).val('')
+            self.filter($(this).val())
+            return
+        }
 
         //检查最大选择数量
         if (self.checkMultipleMaxCount()) {
@@ -124,36 +126,48 @@ Multiple.prototype.inputCustom = function (decorated, $el) {
             $option,
             item,
             newItem
-        if (!str) return
-        if (lastStr === separator) {
-            item = {
-                disabled: false,
-                _text: str,
-                _value: str
-            }
-            this.dropdown.setItemID(item)
 
-            newItem = $.extend(true, {}, item)
-            //_text_bak,_text原始数据的备份
-            newItem._text_bak = newItem._text
-            if (typeof this.options.select === 'function') {
-                var str = this.options.select(newItem)
-                newItem._text = str
-            }
+        function match(separator) {
+            if (lastStr === separator) {
+                item = {
+                    disabled: false,
+                    _text: str,
+                    _value: str
+                }
+                this.dropdown.setItemID(item)
 
-            this.selected.push(newItem)
-            this.data.push(item)
-            $el.val('')
-            $option = $(`<option value="${item._value}">${item._text}</option>`)
-            this.$srcElement.trigger({
-                type: 'selected',
-                value: item,
-                text: item._text,
-                status: true,
-                selectedData: this.selected
-            })
-            this.renderMultipleList()
+                newItem = $.extend(true, {}, item)
+                //_text_bak,_text原始数据的备份
+                newItem._text_bak = newItem._text
+                if (typeof this.options.select === 'function') {
+                    var newStr = this.options.select(newItem)
+                    newItem._text = newStr
+                }
+
+                this.selected.push(newItem)
+                this.data.push(item)
+                $el.val('')
+                $option = $(`<option value="${item._value}">${item._text}</option>`)
+                this.$srcElement.trigger({
+                    type: 'selected',
+                    value: item,
+                    text: item._text,
+                    status: true,
+                    selectedData: this.selected
+                })
+                this.renderMultipleList()
+            }
         }
+        if (!str) return
+        if (typeof separator === 'string') {
+            match.call(this, separator)
+        } else if ($.isArray(separator)) {
+            for (var i = 0; i < separator.length; i++) {
+                match.call(this, separator[i])
+            }
+        }
+
+
     }
 }
 
@@ -165,6 +179,13 @@ Multiple.prototype.inputBackspace = function (decorated, $el) {
     if (!lastSelected) return
     this.selected.splice(pos, 1)
     $el.val(lastSelected[showField + '_bak'] || lastSelected._text_bak)
+    this.$srcElement.trigger({
+        type: 'selected',
+        value: lastSelected,
+        text: lastSelected[showField] || lastSelected._text,
+        status: false,
+        selectedData: this.selected
+    })
     this.hideError()
     this.renderMultipleList()
 }
@@ -185,3 +206,5 @@ Multiple.prototype.checkMultipleMaxCount = function (decorated) {
     }
     return false
 }
+
+module.exports = Multiple

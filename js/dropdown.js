@@ -1,5 +1,7 @@
-import VARS from './vars'
-export default function Dropdown(selector) {
+// import VARS from './vars'
+var VARS = require('./vars')
+// export default function Dropdown(selector) {
+function Dropdown(selector) {
     this.selector = selector
     this.$dropdown = $(VARS.tpl.dropdown)
     this.$options = $(VARS.tpl.options)
@@ -71,11 +73,12 @@ Dropdown.prototype.renderList = function (data) {
                 } else {
                     this.selector.selected = newItem
                 }
-
                 this.selector.$srcElement.trigger({
                     type: 'selected',
-                    value: newItem,
-                    text: newItem[showField]
+                    value: item,
+                    text: item[showField],
+                    status: true,
+                    selectedData: this.selector.selected
                 })
             }
 
@@ -180,3 +183,5 @@ Dropdown.prototype.resetHover = function () {
     this.hoverIndex = -1
     this.$optionsList.find('.' + className.hoverClassName).removeClass(className.hoverClassName)
 }
+
+module.exports = Dropdown

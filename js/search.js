@@ -1,5 +1,7 @@
-import VARS from './vars'
-export default function Search(decorated) {
+// import VARS from './vars'
+var VARS = require('./vars')
+// export default function Search(decorated) {
+function Search(decorated) {
     this.$search = $(VARS.tpl.search)
     this.$searchInput = this.$search.find('input')
     decorated.apply(this, Array.prototype.slice.call(arguments, 1))
@@ -21,7 +23,9 @@ Search.prototype.bind = function (decorated) {
     var self = this,
         events = VARS.events,
         specialKeyCode = VARS.specialKeyCode
-    this.$searchInput.on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
+    // input 事件在IE中可能存在问题，加载页面后就会执行回调
+    // this.$searchInput.on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
+    this.$searchInput.on(events.keyupEvent, function (e) {
         var keyCode = e.keyCode || e.which,
             keyword = typeof e.keyword !== 'undefined' ? e.keyword : $(this).val()
         if (keyCode) {
@@ -51,19 +55,19 @@ Search.prototype.filter = function (decorated, keyword) {
         data = this.data,
         searchField = this.options.searchField,
         filterData = [],
-        // reg = new RegExp('^' + keyword.toString().toUpperCase() + '.*'),//半模糊左匹配
-        reg = new RegExp('(' + keyword.toString().toUpperCase() + ')'),//全模糊
+        // reg = new RegExp('^' + keyword.toString() + '.*'),//半模糊左匹配
+        reg = new RegExp('(' + keyword.toString() + ')', 'i'),//全模糊
         each = function (data, item, index, subindex) {
             item.index = index
             if (typeof subindex === 'number') item.subindex = subindex
             var newItem = $.extend(true, {}, item),
-                showStr = item[field] && item[field].toString().toUpperCase()
+                showStr = item[field] && item[field].toString()
 
             if (this.options.multipleInputCustom) {
                 showStr = showStr || item._text
             }
 
-            if (reg.test(showStr.toString().toUpperCase())) {
+            if (reg.test(showStr.toString())) {
                 if (this.options.multipleInputCustom) {
                     newItem._text = replaceKeyword(showStr)
                 }
@@ -71,13 +75,13 @@ Search.prototype.filter = function (decorated, keyword) {
 
                 data.push(newItem)
             }
-            if (rightField && newItem[rightField] && reg.test(newItem[rightField].toString().toUpperCase())) {
+            if (rightField && newItem[rightField] && reg.test(newItem[rightField].toString())) {
                 newItem[rightField] = replaceKeyword(newItem[rightField])
                 data.push(newItem)
             }
             if (!!searchField.length) {
                 for (var i = 0; i < searchField.length; i++) {
-                    if (newItem[searchField[i]] && reg.test(newItem[searchField[i]].toString().toUpperCase())) {
+                    if (newItem[searchField[i]] && reg.test(newItem[searchField[i]].toString())) {
                         data.push(newItem)
                     }
                 }
@@ -95,7 +99,7 @@ Search.prototype.filter = function (decorated, keyword) {
                     optgroup: true,
                     options: []
                 }
-                if (reg.test(item.label.toString().toUpperCase())) {
+                if (reg.test(item.label.toString())) {
                     obj.label = replaceKeyword(obj.label)
                     obj.options = item.options
                     // obj.options = item.options.concat()
@@ -119,3 +123,5 @@ Search.prototype.filter = function (decorated, keyword) {
     }
     this.dropdown.renderList(filterData)
 }
+
+module.exports = Search

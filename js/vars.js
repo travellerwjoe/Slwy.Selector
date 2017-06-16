@@ -38,7 +38,8 @@ var prefix = 'slwy',
         multipleSelected: prefix + '-selector-multiple-selected'
     },
     specialKeyCode = ['112-123', 27, 9, 20, '16-19', '91-93', 13, '33-40', 45, 46, 144, 145]//特殊按键的keyCode
-export default {
+// export default {
+module.exports = {
     prefix,
     tpl,
     namespace,

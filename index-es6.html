@@ -16,12 +16,14 @@
             <option value="MU" data-right="MU">东方航空</option>
             <option value="CZ" selected>南方航空</option>
             <option value="FM" disabled>上海航空</option>
+            <option value="FM">Joe</option>
     </select>
     <select name="select" class="demo-select-multiple" multiple>
         <option value="CA" data-right="CA" disabled>中国国际航空</option>
         <option value="MU" data-right="MU">东方航空</option>
         <option value="CZ">南方航空</option>
         <option value="FM">上海航空</option>
+        <option value="FM">Joe</option>
     </select>
     <select id="TripPeople" name="TripPeople" multiple>
         <option value="奥特曼">奥特曼</option>
@@ -68,7 +70,10 @@
         }).on('selected', function (e) {
             console.log(e)
         })
-        $('#TripPeople').SlwySelector({
+
+        $('#TripPeople').on('selected', function (e) {
+            console.log(e)
+        }).SlwySelector({
             // showRight: true,//是否显示右侧字段
             multipleInputCustom: true,
             searchShowEmpty: false,
@@ -80,8 +85,6 @@
             select: function (data) {
                 return data.CarrierName + '<i>非企业员工</i>'
             }
-        }).on('selected', function (e) {
-            console.log(e)
         })
     </script>
 </body>

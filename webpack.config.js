@@ -48,6 +48,11 @@ module.exports = {
                         loader: 'sass-loader'
                     },
                 ]
+            },
+            {
+                test: /\.js$/,
+                enforce: 'post',
+                loader: 'es3ify-loader' //针对IE8及以下不支持default 、 class、catch等关键字
             }
         ]
     },
@@ -71,7 +76,11 @@ module.exports = {
             })
         ]
         if (process.env.Node_ENV === 'production') {
-            plugins.push(new UglifyJSPlugin())
+            plugins.push(new UglifyJSPlugin({
+                compress: {
+                    properties: false
+                }
+            }))
         }
         return plugins
     })()
