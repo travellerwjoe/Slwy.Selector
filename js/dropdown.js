@@ -8,6 +8,7 @@ function Dropdown(selector) {
     this.$optionsList = $(VARS.tpl.optionsList)
     this.hoverIndex = -1
     this.activeIndex = -1
+    this.first = true //首次遍历时使用，有别于selector下的first
     this.init()
 }
 
@@ -60,7 +61,7 @@ Dropdown.prototype.renderList = function (data) {
             }
 
             //首次遍历提取自定义数据中的selected
-            if (this.selector.first && (item.selected || item.Selected)) {
+            if (this.first && (item.selected || item.Selected)) {
                 var newItem = $.extend(true, {}, item)
                 if (this.selector.isMultiple) {
                     newItem[showField + '_bak'] = newItem[showField]
@@ -151,6 +152,7 @@ Dropdown.prototype.renderList = function (data) {
             }
         }
     }
+    this.first = false
     hasOptgroup = /optgroup/.test(html)
     if (hasOptgroup) this.$optionsList.addClass(className.hasOptgroupClassName)
     this.$optionsList.html(html)
