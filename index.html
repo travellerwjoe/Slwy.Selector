@@ -295,12 +295,31 @@
             &lt;select name="select" class="demo-other-searchField"&gt;
             &lt;/select&gt;
              //JS
-            $('select.other-searchField').SlwySelector({
+            $('select.demo-other-searchField').SlwySelector({
                 data: data,//自定义数据
                 showField: 'CarrierName',//需要展示的自定义数据字段名
                 search: true,//是否显示搜索
                 searchField: ['CarrierCode'],
                 searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+            })
+            </code>
+        </pre>
+
+        <h3>----打开不自动聚焦到搜索框</h3>
+        <select name="select" class="demo-other-notSearchAutoFocus">
+        </select>
+        <pre>
+            <code>
+            //html
+            &lt;select name="select" class="demo-other-searchField"&gt;
+            &lt;/select&gt;
+             //JS
+            $('select.demo-other-notSearchAutoFocus').SlwySelector({
+                data: data,//自定义数据
+                showField: 'CarrierName',//需要展示的自定义数据字段名
+                search: true,//是否显示搜索
+                searchPlaceholder: '搜索航空公司',//搜索栏placeholder
+                searchAutoFocus: false
             })
             </code>
         </pre>
@@ -385,6 +404,14 @@
             search: true,//是否显示搜索
             searchField: ['CarrierCode'],
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        })
+
+        $('select.demo-other-notSearchAutoFocus').SlwySelector({
+            data: data,//自定义数据
+            showField: 'CarrierName',//需要展示的自定义数据字段名
+            search: true,//是否显示搜索
+            searchPlaceholder: '搜索航空公司',//搜索栏placeholder
+            searchAutoFocus: false
         })
     </script>
 </body>

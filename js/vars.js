@@ -21,6 +21,7 @@ var prefix = 'slwy',
         focusEvent: 'focus' + namespace,
         blurEvent: 'blur' + namespace,
         clickEvent: 'click' + namespace,
+        changeEvent: 'change' + namespace,
         mouseenterEvent: 'mouseenter' + namespace,
         selectedEvent: 'selected' + namespace,
         propertyChangeEvent: 'propertychange' + namespace

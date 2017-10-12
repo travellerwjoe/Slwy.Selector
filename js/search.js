@@ -25,7 +25,7 @@ Search.prototype.bind = function (decorated) {
         specialKeyCode = VARS.specialKeyCode
     // input 事件在IE中可能存在问题，加载页面后就会执行回调
     // this.$searchInput.on(events.keyupEvent + ' ' + events.inputEvent, function (e) {
-    this.$searchInput.on(events.keyupEvent, function (e) {
+    this.$searchInput.on(events.keyupEvent + ' ' + events.changeEvent + ' search', function (e) {
         var keyCode = e.keyCode || e.which,
             keyword = typeof e.keyword !== 'undefined' ? e.keyword : $(this).val()
         if (keyCode) {

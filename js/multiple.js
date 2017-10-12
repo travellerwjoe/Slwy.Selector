@@ -22,8 +22,8 @@ Multiple.prototype.bind = function (decorated) {
     decorated.call(this)
     var self = this,
         events = VARS.events,
-        className = VARS.className,
-        specialKeyCode = VARS.specialKeyCode
+        className = VARS.className
+        // specialKeyCode = VARS.specialKeyCode
     this.$opener.off(events.clickEvent).on(events.clickEvent, function (e) {
         self.$multipleInput.focus()
     })
@@ -101,7 +101,7 @@ Multiple.prototype.renderMultipleList = function () {
 }
 
 Multiple.prototype.renderMultipleInput = function () {
-    var maxlength = parseInt(this.multipleInputMaxLength)
+    // var maxlength = parseInt(this.multipleInputMaxLength)
     this.$multipleList.after(this.$multipleInput)
     // maxlength && this.$multipleInput.attr('maxlength', maxlength + 1)
 }

@@ -15,6 +15,7 @@ function Selector(options, $srcElement) {
         searchPlaceholder: '搜索',
         searchField: [],//可被用于搜索的字段
         searchShowEmpty: true,//搜索时显示无结果提示
+        searchAutoFocus: true,//打开自动聚焦搜索框
         viewCount: 10,
         width: null,
         multipleInputSeparator: [';', '；'], //multiple下输入时分隔符
@@ -162,7 +163,7 @@ Selector.prototype.show = function () {
         this.first = false
     }
     this.$opener && this.$opener.addClass(VARS.className.expandClassName).blur()
-    this.$search && this.$searchInput.focus()
+    this.$search && this.options.searchAutoFocus && this.$searchInput.focus()
     this.isShow = true
 }
 
