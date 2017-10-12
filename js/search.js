@@ -74,10 +74,12 @@ Search.prototype.filter = function (decorated, keyword) {
                 newItem[field] = replaceKeyword(showStr)
 
                 data.push(newItem)
+                return
             }
             if (rightField && newItem[rightField] && reg.test(newItem[rightField].toString())) {
                 newItem[rightField] = replaceKeyword(newItem[rightField])
                 data.push(newItem)
+                return
             }
             if (!!searchField.length) {
                 for (var i = 0; i < searchField.length; i++) {
