@@ -155,8 +155,8 @@ Selector.prototype.render = function () {
 Selector.prototype.show = function () {
     if (this.isShow) return
     this.$selector.show()
+    this.setPosition()
     if (this.first) {
-        this.setPosition()
         // if (parseInt(this.options.viewCount)) {
         this.dropdown.setListHeigth()
         // }
