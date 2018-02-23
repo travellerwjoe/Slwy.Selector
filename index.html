@@ -8,15 +8,18 @@
     <!--<link rel="stylesheet" href="dist/jquery.Slwy.Selector.min.css">-->
     <!--<link rel="stylesheet" href="stylesheets/selector.css">-->
     <title>Slwy-Selector</title>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/default.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
     <style>
-        input {
+        .demo-input {
             width: 300px;
         }
 
         body {
             margin-bottom: 300px;
+        }
+        select{
+            width:400px;
         }
     </style>
 </head>
@@ -238,6 +241,61 @@
         </pre>
     </section>
     <section>
+        <h2>多选select与自定义输入</h2>
+        <h3>----多选select</h3>
+        <select name="select" class="demo-select-multiple" multiple>
+            <option value="CA" data-right="CA" disabled>中国国际航空</option>
+            <option value="MU" data-right="MU">东方航空</option>
+            <option value="CZ">南方航空</option>
+            <option value="FM">上海航空</option>
+            <option value="FM">Joe</option>
+        </select>
+        <pre>
+            <code>
+            //html
+            &lt;select name="select" class="demo-select-multiple" multiple&gt;
+                &lt;option value="CA" data-right="CA" disabled&gt;中国国际航空&lt;/option&gt;
+                &lt;option value="MU" data-right="MU"&gt;东方航空&lt;/option&gt;
+                &lt;option value="CZ"&gt;南方航空&lt;/option&gt;
+                &lt;option value="FM"&gt;上海航空&lt;/option&gt;
+                &lt;option value="FM"&gt;Joe&lt;/option&gt;
+            &lt;/select&gt;
+             //JS
+            $('select.demo-select-multiple').SlwySelector({
+                searchShowEmpty: false,
+                multipleMaxCount: 9,
+            })
+            </code>
+        </pre>
+
+        <h3>----可自定义输入的多选select</h3>
+        <select name="select" class="demo-select-multiple-custom" multiple>
+            <option value="CA" data-right="CA" disabled>中国国际航空</option>
+            <option value="MU" data-right="MU">东方航空</option>
+            <option value="CZ">南方航空</option>
+            <option value="FM">上海航空</option>
+            <option value="FM">Joe</option>
+        </select>
+        <pre>
+            <code>
+            //html
+            &lt;select name="select" class="demo-select-multiple-custom" multiple&gt;
+                &lt;option value="CA" data-right="CA" disabled&gt;中国国际航空&lt;/option&gt;
+                &lt;option value="MU" data-right="MU"&gt;东方航空&lt;/option&gt;
+                &lt;option value="CZ"&gt;南方航空&lt;/option&gt;
+                &lt;option value="FM"&gt;上海航空&lt;/option&gt;
+                &lt;option value="FM"&gt;Joe&lt;/option&gt;
+            &lt;/select&gt;
+             //JS
+            $('select.demo-select-multiple-custom').SlwySelector({
+                multipleInputCustom: true,
+                searchShowEmpty: false,
+                multipleMaxCount: 9,
+            })
+            </code>
+        </pre>
+    </section>
+    <section>
         <h2>其他参数配置</h2>
         <h3>----自定义宽度</h3>
         <select name="select" class="demo-other-width">
@@ -344,14 +402,17 @@
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
         })
         //选择事件
-        /*.on('selected', function (e) {
+        .on('selected', function (e) {
             console.log(e.value)
-        })*/
+        })
 
         $('select.demo-select').SlwySelector({
             showRight: true,//是否显示右侧字段
             search: true,//是否显示搜索
             searchPlaceholder: '搜索航空公司'//搜索栏placeholder
+        })
+        .on('selected', function (e) {
+            console.log(e.value)
         })
 
         $('select.demo-select-data').SlwySelector({
@@ -413,6 +474,20 @@
             searchPlaceholder: '搜索航空公司',//搜索栏placeholder
             searchAutoFocus: false
         })
+
+
+        $('select.demo-select-multiple').SlwySelector({
+            searchShowEmpty: false,
+            multipleMaxCount: 9,
+        })
+
+        $('select.demo-select-multiple-custom').SlwySelector({
+            multipleInputCustom: true,
+            searchShowEmpty: false,
+            multipleMaxCount: 9,
+            //multipleInputSeparator:[';', '；',',']
+        })
+        
     </script>
 </body>
 

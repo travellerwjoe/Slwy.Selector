@@ -36,6 +36,9 @@ Opener.prototype.render = function (decorated) {
     var showField = !this.hasOptionsData ? this.options.showField : '_text',
         selectedText = this.selected[showField],
         selectedValue = this.selected
+
+    this.$opener.width(this.$srcElement.width())
+    
     // debugger
     this.options.width && this.$opener.width(this.options.width)
     this.options.skin && this.$opener.addClass(this.options.skin)
