@@ -380,7 +380,7 @@ Slwy简易选择列表插件
 * 类型： `Array`
 * 默认： `[]`
 
-使用自定义的数据（接口返回的`json`数据）代替`<option>`，自定义数据格式参考[自定义数据说明](/data)
+使用自定义的数据（接口返回的`json`数据）代替`<option>`，自定义数据格式参考[自定义数据说明](#自定义数据说明)
 
 
 ## showField 自定义数据展示字段名
@@ -506,7 +506,7 @@ Slwy简易选择列表插件
 
 下拉选择后的回调函数
 
-> 也可通过为绑定的input元素使用`.on`监听[selected事件](event.md)
+> 也可通过为绑定的input元素使用`.on`监听[selected事件](#selected事件-docsify-ignore)
 
 
 
@@ -589,4 +589,4 @@ $('#date')
     })
 ```
 
-> 同样也可以传入[选项select](/options?id=select-回调函数)来触发事件
+> 同样也可以传入[选项select](#select-回调函数)来触发事件
