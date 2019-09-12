@@ -1,7 +1,4 @@
 # Slwy.Selector
-Slwy简易选择列表插件
-
-![Slwy.Selector](./docs/imgs/slwy-selector.png)
 
 # 使用
 
